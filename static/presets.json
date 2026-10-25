@@ -1,0 +1,22 @@
+[
+  {"slug": "netflix", "nom": "Netflix", "couleur": "E50914", "categorie": "Streaming"},
+  {"slug": "disneyplus", "nom": "Disney+", "couleur": "113CCF", "categorie": "Streaming"},
+  {"slug": "amazonprime", "nom": "Amazon Prime", "couleur": "00A8E1", "categorie": "Streaming"},
+  {"slug": "youtube", "nom": "YouTube Premium", "couleur": "FF0000", "categorie": "Streaming"},
+  {"slug": "canalplus", "nom": "Canal+", "couleur": "000000", "categorie": "Streaming"},
+  {"slug": "twitch", "nom": "Twitch", "couleur": "9146FF", "categorie": "Streaming"},
+  {"slug": "spotify", "nom": "Spotify", "couleur": "1DB954", "categorie": "Musique"},
+  {"slug": "applemusic", "nom": "Apple Music", "couleur": "FA243C", "categorie": "Musique"},
+  {"slug": "deezer", "nom": "Deezer", "couleur": "FEAA2D", "categorie": "Musique"},
+  {"slug": "icloud", "nom": "iCloud", "couleur": "3693F3", "categorie": "Cloud"},
+  {"slug": "googleone", "nom": "Google One", "couleur": "4285F4", "categorie": "Cloud"},
+  {"slug": "dropbox", "nom": "Dropbox", "couleur": "0061FF", "categorie": "Cloud"},
+  {"slug": "openai", "nom": "ChatGPT", "couleur": "412991", "categorie": "IA"},
+  {"slug": "claude", "nom": "Claude", "couleur": "D97757", "categorie": "IA"},
+  {"slug": "github", "nom": "GitHub", "couleur": "181717", "categorie": "Dev"},
+  {"slug": "notion", "nom": "Notion", "couleur": "000000", "categorie": "Productivité"},
+  {"slug": "microsoftoffice", "nom": "Microsoft 365", "couleur": "D83B01", "categorie": "Productivité"},
+  {"slug": "playstation", "nom": "PlayStation Plus", "couleur": "0070D1", "categorie": "Jeux"},
+  {"slug": "xbox", "nom": "Xbox Game Pass", "couleur": "107C10", "categorie": "Jeux"},
+  {"slug": "nordvpn", "nom": "NordVPN", "couleur": "4687FF", "categorie": "VPN"}
+]

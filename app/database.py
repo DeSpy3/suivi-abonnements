@@ -7,7 +7,6 @@ from platformdirs import user_data_dir
 
 from app.models import Abonnement, AbonnementDB, Frequence
 
-# Linux : ~/.local/share/suivi-abonnements/ — Windows : dossier AppData\Local
 DB_PATH = Path(user_data_dir("suivi-abonnements")) / "abonnements.db"
 
 
@@ -31,18 +30,24 @@ def init_db() -> None:
                 nom TEXT NOT NULL,
                 prix TEXT NOT NULL,
                 frequence TEXT NOT NULL,
-                categorie TEXT
+                categorie TEXT,
+                icone TEXT
             )"""
         )
+        # Migration : ajoute la colonne icone aux bases créées avant cette version
+        colonnes = [c["name"] for c in conn.execute("PRAGMA table_info(abonnements)")]
+        if "icone" not in colonnes:
+            conn.execute("ALTER TABLE abonnements ADD COLUMN icone TEXT")
 
 
 def _vers_modele(ligne: sqlite3.Row) -> AbonnementDB:
     return AbonnementDB(
         id=ligne["id"],
         nom=ligne["nom"],
-        prix=Decimal(ligne["prix"]),  # stocké en texte pour garder la précision
+        prix=Decimal(ligne["prix"]),
         frequence=Frequence(ligne["frequence"]),
         categorie=ligne["categorie"],
+        icone=ligne["icone"],
     )
 
 
@@ -57,8 +62,8 @@ def lister() -> list[AbonnementDB]:
 def ajouter(abo: Abonnement) -> AbonnementDB:
     with connexion() as conn:
         cur = conn.execute(
-            "INSERT INTO abonnements (nom, prix, frequence, categorie) VALUES (?, ?, ?, ?)",
-            (abo.nom, str(abo.prix), abo.frequence.value, abo.categorie),
+            "INSERT INTO abonnements (nom, prix, frequence, categorie, icone) VALUES (?, ?, ?, ?, ?)",
+            (abo.nom, str(abo.prix), abo.frequence.value, abo.categorie, abo.icone),
         )
         id_ = cur.lastrowid
     return AbonnementDB(id=id_, **abo.model_dump())
@@ -67,8 +72,8 @@ def ajouter(abo: Abonnement) -> AbonnementDB:
 def modifier(id_: int, abo: Abonnement) -> AbonnementDB | None:
     with connexion() as conn:
         cur = conn.execute(
-            "UPDATE abonnements SET nom = ?, prix = ?, frequence = ?, categorie = ? WHERE id = ?",
-            (abo.nom, str(abo.prix), abo.frequence.value, abo.categorie, id_),
+            "UPDATE abonnements SET nom = ?, prix = ?, frequence = ?, categorie = ?, icone = ? WHERE id = ?",
+            (abo.nom, str(abo.prix), abo.frequence.value, abo.categorie, abo.icone, id_),
         )
         if cur.rowcount == 0:
             return None

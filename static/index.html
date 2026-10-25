@@ -5,46 +5,146 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Suivi d'abonnements</title>
 <style>
-  :root { --bg:#f6f7f9; --carte:#fff; --texte:#1c1e21; --discret:#6b7280; --bord:#e2e5ea; --accent:#3b6fd4; --danger:#c0392b; }
+  :root {
+    color-scheme: light dark;
+    --bg:#f4f5fb; --carte:#ffffff; --texte:#151826; --discret:#6b7186; --bord:#e6e8f1;
+    --accent:#6366f1; --accent2:#8b5cf6; --danger:#ef4444;
+    --ombre: 0 1px 2px rgba(20,24,50,.04), 0 8px 24px rgba(20,24,50,.06);
+  }
   @media (prefers-color-scheme: dark) {
-    :root { --bg:#16181d; --carte:#1f2229; --texte:#e8eaed; --discret:#9aa0aa; --bord:#2e323b; --accent:#6c93e6; --danger:#e57365; }
+    :root {
+      --bg:#0f111a; --carte:#171a26; --texte:#eceef7; --discret:#9096ad; --bord:#262a3b;
+      --accent:#818cf8; --accent2:#a78bfa;
+      --ombre: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    }
   }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
-  body { margin:0; padding:2rem 1rem; background:var(--bg); color:var(--texte); font-family: system-ui, sans-serif; }
-  main { max-width: 800px; margin: 0 auto; display: grid; gap: 1rem; }
-  h1 { margin: 0 0 .5rem; font-size: 1.5rem; }
-  h2 { margin: 0 0 .75rem; font-size: 1rem; }
-  .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 1rem 1.25rem; }
-  .totaux { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  .totaux .valeur { font-size: 1.6rem; font-weight: 600; }
+  body {
+    margin: 0; padding: 2rem 1rem 4rem; color: var(--texte);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(1000px 420px at 10% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent),
+      var(--bg);
+  }
+  main { max-width: 960px; margin: 0 auto; display: grid; gap: 1.1rem; }
+  header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+  h1 { margin: 0; font-size: 1.7rem; letter-spacing: -.02em; }
+  h2 { margin: 0 0 .9rem; font-size: 1rem; }
   .discret { color: var(--discret); font-size: .85rem; }
-  form { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: .5rem; }
-  .actions-form { grid-column: 1 / -1; display: flex; gap: .5rem; }
-  input, select, button { font: inherit; padding: .5rem .6rem; border-radius: 8px; border: 1px solid var(--bord); background: var(--bg); color: var(--texte); }
-  button { cursor: pointer; }
-  button.principal { background: var(--accent); border-color: var(--accent); color: #fff; }
-  button.danger { color: var(--danger); }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: .55rem .4rem; border-bottom: 1px solid var(--bord); }
-  td.num, th.num { text-align: right; }
-  td.actions { text-align: right; white-space: nowrap; }
-  ul { margin: 0; padding-left: 1.1rem; }
-  @media (max-width: 640px) { form, .totaux { grid-template-columns: 1fr 1fr; } }
+  #mois { text-transform: capitalize; }
+
+  .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 18px; padding: 1.1rem 1.3rem; box-shadow: var(--ombre); }
+
+  /* Statistiques */
+  .stats { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 1rem; }
+  .stat { display: flex; flex-direction: column; gap: .15rem; }
+  .stat-label { font-size: .8rem; color: var(--discret); text-transform: uppercase; letter-spacing: .05em; }
+  .stat-valeur { font-size: 1.7rem; letter-spacing: -.02em; }
+  .stat-sous { font-size: .85rem; color: var(--discret); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat.hero { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: 0; }
+  .stat.hero .stat-label, .stat.hero .stat-sous { color: rgba(255,255,255,.8); }
+  .stat.hero .stat-valeur { font-size: 2.2rem; }
+
+  /* Graphiques */
+  .graphes { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1rem; }
+  .donut-zone { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+  #donut { width: 170px; height: 170px; flex: none; }
+  .anneau-fond { fill: none; stroke: var(--bord); stroke-width: 5.5; }
+  .anneau-arc { fill: none; stroke-width: 5.5; transition: stroke-width .15s; }
+  .anneau-arc:hover { stroke-width: 7; }
+  .centre-valeur { font-size: 4.6px; font-weight: 700; fill: var(--texte); text-anchor: middle; }
+  .centre-label { font-size: 2.4px; fill: var(--discret); text-anchor: middle; }
+  #legende { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; font-size: .9rem; flex: 1; min-width: 150px; }
+  #legende li { display: flex; align-items: center; gap: .5rem; }
+  .point { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  #legende .montant { margin-left: auto; color: var(--discret); }
+  .barre-ligne { display: grid; grid-template-columns: 130px 1fr 70px; align-items: center; gap: .6rem; margin-bottom: .6rem; font-size: .9rem; }
+  .barre-nom { display: flex; align-items: center; gap: .5rem; min-width: 0; }
+  .barre-nom span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .piste { height: 10px; background: var(--bord); border-radius: 999px; overflow: hidden; }
+  .remplissage { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .6s cubic-bezier(.2,.8,.2,1); }
+  .barre-valeur { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Logos */
+  .logo { width: var(--taille); height: var(--taille); border-radius: calc(var(--taille) * .28); background: #fff; border: 1px solid var(--bord);
+          display: grid; place-items: center; flex: none; overflow: hidden; }
+  .logo img { width: 62%; height: 62%; object-fit: contain; }
+  .logo.badge { color: #fff; border: 0; font-weight: 700; font-size: calc(var(--taille) * .42); }
+
+  /* Formulaire */
+  #presets { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 1rem; }
+  .chip { display: inline-flex; align-items: center; gap: .5rem; padding: .3rem .8rem .3rem .35rem; border-radius: 999px;
+          border: 1px solid var(--bord); background: var(--carte); color: var(--texte); cursor: pointer; font: inherit; font-size: .88rem; }
+  .chip:hover { border-color: var(--accent); }
+  .chip.actif { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--carte)); }
+  form { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: .6rem; }
+  .actions-form { grid-column: 1 / -1; display: flex; gap: .6rem; }
+  input, select, button { font: inherit; }
+  input, select { padding: .6rem .75rem; border-radius: 10px; border: 1px solid var(--bord); background: var(--bg); color: var(--texte); }
+  input:focus, select:focus { outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent); border-color: var(--accent); }
+  .btn { padding: .6rem 1.1rem; border-radius: 10px; border: 1px solid var(--bord); background: var(--carte); color: var(--texte); cursor: pointer; }
+  .btn.principal { background: linear-gradient(135deg, var(--accent), var(--accent2)); border: 0; color: #fff; font-weight: 600; }
+  .btn:hover { filter: brightness(1.06); }
+
+  /* Liste */
+  .entete-liste { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+  .entete-liste h2 { margin: 0; }
+  #lignes { list-style: none; margin: 0; padding: 0; }
+  .ligne { display: flex; align-items: center; gap: .9rem; padding: .75rem .4rem; border-top: 1px solid var(--bord); }
+  .ligne:first-child { border-top: 0; }
+  .ligne-infos { flex: 1; min-width: 0; display: grid; gap: .25rem; }
+  .meta { display: flex; gap: .35rem; flex-wrap: wrap; }
+  .pill { font-size: .72rem; padding: .1rem .55rem; border-radius: 999px; background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+  .pill-freq { background: var(--bord); color: var(--discret); }
+  .ligne-prix { display: grid; text-align: right; gap: .1rem; }
+  .ligne-actions { display: flex; gap: .25rem; }
+  .icone-btn { width: 34px; height: 34px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--discret); cursor: pointer; }
+  .icone-btn:hover { background: var(--bord); color: var(--texte); }
+  .icone-btn.danger:hover { color: var(--danger); }
+  .vide { text-align: center; color: var(--discret); padding: 1.5rem 0; }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .graphes { grid-template-columns: 1fr; }
+    form { grid-template-columns: 1fr 1fr; }
+    .ligne { flex-wrap: wrap; }
+    .barre-ligne { grid-template-columns: 100px 1fr 60px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 <main>
-  <h1>Suivi d'abonnements</h1>
+  <header>
+    <h1>Suivi d'abonnements</h1>
+    <span class="discret" id="mois"></span>
+  </header>
 
-  <section class="carte totaux">
-    <div><div class="discret">Par mois</div><div class="valeur" id="mensuel">—</div></div>
-    <div><div class="discret">Par an</div><div class="valeur" id="annuel">—</div></div>
-    <div><div class="discret">Abonnements</div><div class="valeur" id="nombre">—</div></div>
+  <section class="stats">
+    <div class="carte stat hero"><span class="stat-label">Par mois</span><strong class="stat-valeur" id="mensuel">—</strong><span class="stat-sous">Total de tous les abonnements</span></div>
+    <div class="carte stat"><span class="stat-label">Par an</span><strong class="stat-valeur" id="annuel">—</strong></div>
+    <div class="carte stat"><span class="stat-label">Par jour</span><strong class="stat-valeur" id="jour">—</strong></div>
+    <div class="carte stat"><span class="stat-label">Le plus cher</span><strong class="stat-valeur" id="plus-cher">—</strong><span class="stat-sous" id="plus-cher-nom"></span></div>
+  </section>
+
+  <section class="graphes">
+    <div class="carte">
+      <h2>Répartition par catégorie</h2>
+      <div class="donut-zone">
+        <svg id="donut" viewBox="0 0 42 42" role="img" aria-label="Répartition des dépenses par catégorie"></svg>
+        <ul id="legende"></ul>
+      </div>
+    </div>
+    <div class="carte">
+      <h2>Coût mensuel par abonnement</h2>
+      <div id="barres"></div>
+    </div>
   </section>
 
   <section class="carte">
-    <h2>Ajouter / modifier</h2>
+    <h2>Ajouter ou modifier</h2>
+    <div id="presets" aria-label="Services courants"></div>
     <form id="formulaire">
       <input id="nom" placeholder="Nom" required>
       <input id="prix" type="number" step="0.01" min="0.01" placeholder="Prix (€)" required>
@@ -55,30 +155,43 @@
       </select>
       <input id="categorie" placeholder="Catégorie (optionnel)">
       <div class="actions-form">
-        <button id="valider" class="principal" type="submit">Ajouter</button>
-        <button id="annuler" type="button" hidden>Annuler</button>
+        <button id="valider" class="btn principal" type="submit">Ajouter</button>
+        <button id="annuler" class="btn" type="button" hidden>Annuler</button>
       </div>
     </form>
   </section>
 
   <section class="carte">
-    <h2>Mes abonnements</h2>
-    <table>
-      <thead><tr><th>Nom</th><th>Catégorie</th><th>Prix</th><th class="num">Par mois</th><th></th></tr></thead>
-      <tbody id="lignes"></tbody>
-    </table>
-  </section>
-
-  <section class="carte">
-    <h2>Par catégorie (coût mensuel)</h2>
-    <ul id="categories"></ul>
+    <div class="entete-liste"><h2>Mes abonnements</h2><span class="discret" id="compteur"></span></div>
+    <ul id="lignes"></ul>
   </section>
 </main>
 
 <script>
 const $ = (id) => document.getElementById(id);
 const euro = (v) => Number(v).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+const UNITE = { mensuel: "mois", trimestriel: "trimestre", annuel: "an" };
+const PALETTE = ["#6366f1", "#22c55e", "#f59e0b", "#ec4899", "#06b6d4", "#ef4444", "#8b5cf6", "#14b8a6"];
+const NS = "http://www.w3.org/2000/svg";
+const RAYON = 15.9155; // circonférence = 100, donc les pourcentages se lisent directement
+
+let PRESETS = [];
 let enEdition = null;
+let iconeChoisie = null;
+
+/* ---------- Utilitaires ---------- */
+function h(tag, classe, texte) {
+  const e = document.createElement(tag);
+  if (classe) e.className = classe;
+  if (texte !== undefined) e.textContent = texte;
+  return e;
+}
+
+function el(nom, attrs = {}) {
+  const e = document.createElementNS(NS, nom);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  return e;
+}
 
 async function api(url, options) {
   const rep = await fetch(url, options);
@@ -86,75 +199,212 @@ async function api(url, options) {
   return rep.status === 204 ? null : rep.json();
 }
 
-function cellule(texte, classe) {
-  const td = document.createElement("td");
-  td.textContent = texte;
-  if (classe) td.className = classe;
-  return td;
+function couleurDepuisNom(nom) {
+  let teinte = 0;
+  for (const c of nom) teinte = (teinte * 31 + c.charCodeAt(0)) % 360;
+  return `hsl(${teinte} 62% 46%)`;
 }
 
-function bouton(texte, classe, action) {
-  const b = document.createElement("button");
-  b.type = "button";
-  b.textContent = texte;
-  b.className = classe;
-  b.onclick = action;
-  return b;
+/* ---------- Logos ---------- */
+function creerLogo(nom, slug, taille) {
+  const preset = PRESETS.find((p) => p.slug === slug);
+  const tuile = h("div", "logo");
+  tuile.style.setProperty("--taille", taille + "px");
+
+  const badge = () => {
+    tuile.classList.add("badge");
+    tuile.style.background = preset ? "#" + preset.couleur : couleurDepuisNom(nom);
+    tuile.textContent = (nom.trim()[0] || "?").toUpperCase();
+  };
+
+  if (preset) {
+    const img = document.createElement("img");
+    img.alt = "";
+    img.src = "logos/" + preset.slug + ".svg";
+    img.onerror = badge; // logo absent : pastille colorée
+    tuile.append(img);
+  } else {
+    badge();
+  }
+  return tuile;
 }
 
+/* ---------- Services prédéfinis ---------- */
+function rendrePresets() {
+  const zone = $("presets");
+  zone.replaceChildren();
+  for (const p of PRESETS) {
+    const chip = h("button", "chip");
+    chip.type = "button";
+    chip.dataset.slug = p.slug;
+    chip.append(creerLogo(p.nom, p.slug, 26), document.createTextNode(p.nom));
+    chip.onclick = () => {
+      if (iconeChoisie === p.slug) {
+        iconeChoisie = null;
+      } else {
+        iconeChoisie = p.slug;
+        $("nom").value = p.nom;
+        $("categorie").value = p.categorie;
+        $("prix").focus();
+      }
+      marquerActif();
+    };
+    zone.append(chip);
+  }
+}
+
+function marquerActif() {
+  for (const chip of document.querySelectorAll(".chip")) {
+    chip.classList.toggle("actif", chip.dataset.slug === iconeChoisie);
+  }
+}
+
+/* ---------- Graphiques ---------- */
+function rendreDonut(parCategorie, mensuel) {
+  const svg = $("donut");
+  const legende = $("legende");
+  svg.replaceChildren();
+  legende.replaceChildren();
+
+  const entrees = Object.entries(parCategorie).map(([nom, v]) => [nom, Number(v)]);
+  const somme = entrees.reduce((s, [, v]) => s + v, 0);
+
+  const groupe = el("g", { transform: "rotate(-90 21 21)" });
+  groupe.append(el("circle", { cx: 21, cy: 21, r: RAYON, class: "anneau-fond" }));
+
+  let cumul = 0;
+  entrees.forEach(([nom, valeur], i) => {
+    const pct = (valeur / somme) * 100;
+    const couleur = PALETTE[i % PALETTE.length];
+    const longueur = Math.max(pct - (entrees.length > 1 ? 0.8 : 0), 0.1);
+
+    const arc = el("circle", {
+      cx: 21, cy: 21, r: RAYON, class: "anneau-arc", stroke: couleur,
+      "stroke-dasharray": `${longueur} ${100 - longueur}`,
+      "stroke-dashoffset": -cumul,
+    });
+    const titre = el("title");
+    titre.textContent = `${nom} : ${euro(valeur)} (${pct.toFixed(0)} %)`;
+    arc.append(titre);
+    groupe.append(arc);
+    cumul += pct;
+
+    const li = h("li");
+    const point = h("span", "point");
+    point.style.background = couleur;
+    li.append(point, h("span", "", nom), h("span", "montant", `${euro(valeur)} · ${pct.toFixed(0)} %`));
+    legende.append(li);
+  });
+
+  svg.append(groupe);
+  const valeur = el("text", { x: 21, y: 22, class: "centre-valeur" });
+  valeur.textContent = euro(mensuel);
+  const label = el("text", { x: 21, y: 26.5, class: "centre-label" });
+  label.textContent = "par mois";
+  svg.append(valeur, label);
+}
+
+function rendreBarres(abos) {
+  const zone = $("barres");
+  zone.replaceChildren();
+  const tries = [...abos].sort((a, b) => Number(b.cout_mensuel) - Number(a.cout_mensuel)).slice(0, 8);
+  if (tries.length === 0) {
+    zone.append(h("p", "vide", "Aucune donnée pour le moment"));
+    return;
+  }
+  const max = Number(tries[0].cout_mensuel);
+
+  for (const a of tries) {
+    const ligne = h("div", "barre-ligne");
+    const nom = h("div", "barre-nom");
+    nom.append(creerLogo(a.nom, a.icone, 22), h("span", "", a.nom));
+    const piste = h("div", "piste");
+    const rempli = h("div", "remplissage");
+    piste.append(rempli);
+    ligne.append(nom, piste, h("span", "barre-valeur", euro(a.cout_mensuel)));
+    zone.append(ligne);
+
+    void rempli.offsetWidth; // force le calcul pour déclencher l'animation
+    rempli.style.width = (Number(a.cout_mensuel) / max) * 100 + "%";
+  }
+}
+
+/* ---------- Liste ---------- */
+function creerLigne(a) {
+  const li = h("li", "ligne");
+
+  const infos = h("div", "ligne-infos");
+  infos.append(h("strong", "", a.nom));
+  const meta = h("div", "meta");
+  if (a.categorie) meta.append(h("span", "pill", a.categorie));
+  meta.append(h("span", "pill pill-freq", a.frequence));
+  infos.append(meta);
+
+  const prix = h("div", "ligne-prix");
+  prix.append(
+    h("strong", "", euro(a.cout_mensuel) + " / mois"),
+    h("span", "discret", euro(a.prix) + " / " + UNITE[a.frequence])
+  );
+
+  const actions = h("div", "ligne-actions");
+  const modifier = h("button", "icone-btn", "✎");
+  modifier.title = "Modifier";
+  modifier.onclick = () => editer(a);
+  const supprimerBtn = h("button", "icone-btn danger", "✕");
+  supprimerBtn.title = "Supprimer";
+  supprimerBtn.onclick = () => supprimer(a);
+  actions.append(modifier, supprimerBtn);
+
+  li.append(creerLogo(a.nom, a.icone, 44), infos, prix, actions);
+  return li;
+}
+
+/* ---------- Chargement ---------- */
 async function charger() {
   const [abos, total] = await Promise.all([api("/api/abonnements"), api("/api/total")]);
 
   $("mensuel").textContent = euro(total.mensuel);
   $("annuel").textContent = euro(total.annuel);
-  $("nombre").textContent = total.nombre;
+  $("jour").textContent = euro(Number(total.annuel) / 365);
+  $("compteur").textContent = abos.length + (abos.length > 1 ? " abonnements" : " abonnement");
 
-  const cats = $("categories");
-  cats.replaceChildren();
-  for (const [nom, montant] of Object.entries(total.par_categorie)) {
-    const li = document.createElement("li");
-    li.textContent = nom + " : " + euro(montant);
-    cats.append(li);
-  }
+  const plusCher = [...abos].sort((a, b) => Number(b.cout_mensuel) - Number(a.cout_mensuel))[0];
+  $("plus-cher").textContent = plusCher ? euro(plusCher.cout_mensuel) : "—";
+  $("plus-cher-nom").textContent = plusCher ? plusCher.nom + " / mois" : "";
 
-  const corps = $("lignes");
-  corps.replaceChildren();
-  for (const a of abos) {
-    const tr = document.createElement("tr");
-    tr.append(
-      cellule(a.nom),
-      cellule(a.categorie ?? "—", "discret"),
-      cellule(euro(a.prix) + " (" + a.frequence + ")"),
-      cellule(euro(a.cout_mensuel), "num")
-    );
-    const actions = document.createElement("td");
-    actions.className = "actions";
-    actions.append(
-      bouton("Modifier", "", () => editer(a)),
-      " ",
-      bouton("Supprimer", "danger", () => supprimer(a))
-    );
-    tr.append(actions);
-    corps.append(tr);
+  rendreDonut(total.par_categorie, total.mensuel);
+  rendreBarres(abos);
+
+  const liste = $("lignes");
+  liste.replaceChildren();
+  if (abos.length === 0) {
+    liste.append(h("li", "vide", "Aucun abonnement pour l'instant : choisis un service ci-dessus pour commencer."));
   }
+  for (const a of abos) liste.append(creerLigne(a));
 }
 
+/* ---------- Actions ---------- */
 function editer(a) {
   enEdition = a.id;
+  iconeChoisie = a.icone ?? null;
   $("nom").value = a.nom;
   $("prix").value = a.prix;
   $("frequence").value = a.frequence;
   $("categorie").value = a.categorie ?? "";
   $("valider").textContent = "Enregistrer";
   $("annuler").hidden = false;
+  marquerActif();
+  $("formulaire").scrollIntoView({ behavior: "smooth", block: "center" });
   $("nom").focus();
 }
 
 function reinitialiser() {
   enEdition = null;
+  iconeChoisie = null;
   $("formulaire").reset();
   $("valider").textContent = "Ajouter";
   $("annuler").hidden = true;
+  marquerActif();
 }
 
 async function supprimer(a) {
@@ -175,6 +425,7 @@ $("formulaire").addEventListener("submit", async (e) => {
     prix: $("prix").value,
     frequence: $("frequence").value,
     categorie: $("categorie").value.trim() || null,
+    icone: iconeChoisie,
   };
   const url = enEdition ? "/api/abonnements/" + enEdition : "/api/abonnements";
   try {
@@ -192,7 +443,13 @@ $("formulaire").addEventListener("submit", async (e) => {
 
 $("annuler").addEventListener("click", reinitialiser);
 
-charger();
+async function init() {
+  $("mois").textContent = new Date().toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  PRESETS = await fetch("presets.json").then((r) => r.json()).catch(() => []);
+  rendrePresets();
+  await charger();
+}
+init();
 </script>
 </body>
 </html>

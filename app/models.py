@@ -15,6 +15,7 @@ class Abonnement(BaseModel):
     prix: Decimal = Field(gt=0)
     frequence: Frequence
     categorie: str | None = None
+    icone: str | None = None
 
 
 class AbonnementDB(Abonnement):
