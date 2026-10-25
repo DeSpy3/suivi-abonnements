@@ -6,55 +6,102 @@
 <title>Suivi d'abonnements</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="app.js" defer></script>
 </head>
 <body>
+
+<nav class="barre-nav">
+  <div class="nav-contenu">
+    <a class="marque" href="#apercu">
+      <span class="marque-logo">
+        <svg class="ico" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
+      </span>
+      <span class="marque-nom">Suivi d'abonnements</span>
+    </a>
+    <div class="onglets">
+      <a class="onglet actif" href="#apercu">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Aperçu</span>
+      </a>
+      <a class="onglet" href="#ajouter">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+        <span>Ajouter</span>
+      </a>
+      <a class="onglet" href="#abonnements">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <span>Abonnements</span>
+      </a>
+    </div>
+    <span class="nav-mois" id="mois"></span>
+  </div>
+</nav>
+
 <main>
-  <header>
-    <h1>Abonnements</h1>
-    <p class="discret" id="mois"></p>
+  <header class="page-entete" id="apercu">
+    <h1>Aperçu du tableau de bord</h1>
+    <p>Vos abonnements et vos dépenses en un coup d'œil</p>
   </header>
 
   <section class="stats">
-    <div class="stat principal">
-      <span class="stat-label">Par mois</span>
-      <strong class="stat-valeur" id="mensuel">—</strong>
+    <div class="stat bleu">
+      <div>
+        <span class="stat-label">Total mensuel</span>
+        <strong class="stat-valeur" id="mensuel">—</strong>
+        <span class="stat-sous" id="jour"></span>
+      </div>
+      <span class="stat-icone"><svg class="ico" viewBox="0 0 24 24"><path d="M4 10h12M4 14h9M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></svg></span>
     </div>
-    <div class="stat">
-      <span class="stat-label">Par an</span>
-      <strong class="stat-valeur" id="annuel">—</strong>
+    <div class="stat vert">
+      <div>
+        <span class="stat-label">Projection annuelle</span>
+        <strong class="stat-valeur" id="annuel">—</strong>
+      </div>
+      <span class="stat-icone"><svg class="ico" viewBox="0 0 24 24"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg></span>
     </div>
-    <div class="stat">
-      <span class="stat-label">Par jour</span>
-      <strong class="stat-valeur" id="jour">—</strong>
+    <div class="stat orange">
+      <div>
+        <span class="stat-label">Abonnements actifs</span>
+        <strong class="stat-valeur" id="nb">—</strong>
+      </div>
+      <span class="stat-icone"><svg class="ico" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
     </div>
-    <div class="stat">
-      <span class="stat-label">Le plus cher</span>
-      <strong class="stat-valeur" id="plus-cher">—</strong>
-      <span class="stat-sous" id="plus-cher-nom"></span>
+    <div class="stat violet">
+      <div>
+        <span class="stat-label">Le plus cher</span>
+        <strong class="stat-valeur" id="plus-cher">—</strong>
+        <span class="stat-sous" id="plus-cher-nom"></span>
+      </div>
+      <span class="stat-icone"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span>
     </div>
   </section>
 
   <section class="graphes">
     <div class="carte">
-      <h2>Par catégorie</h2>
-      <div class="donut-zone">
-        <svg id="donut" viewBox="0 0 42 42" role="img" aria-label="Répartition des dépenses par catégorie"></svg>
-        <ul id="legende"></ul>
+      <div class="carte-titre">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M21.2 15.9A10 10 0 1 1 8 2.8"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+        <h2>Dépenses par catégorie <span class="precision">(mensuel)</span></h2>
       </div>
+      <div class="barres" id="categories"></div>
     </div>
     <div class="carte">
-      <h2>Les plus coûteux</h2>
-      <div id="barres"></div>
+      <div class="carte-titre">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+        <h2>Les plus coûteux <span class="precision">(mensuel)</span></h2>
+      </div>
+      <div class="barres" id="barres"></div>
     </div>
   </section>
 
-  <section class="carte ajout">
+  <section class="carte ajout" id="ajouter">
     <div class="catalogue">
-      <div class="catalogue-entete">
+      <div class="carte-titre">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
         <h2>Services courants</h2>
+      </div>
+      <div class="recherche-zone">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         <input id="recherche" type="search" placeholder="Rechercher un service…" autocomplete="off">
       </div>
       <div id="presets"></div>
@@ -62,7 +109,10 @@
     </div>
 
     <form id="formulaire">
-      <h2 id="titre-form">Nouvel abonnement</h2>
+      <div class="carte-titre">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+        <h2 id="titre-form">Nouvel abonnement</h2>
+      </div>
       <label>Nom
         <input id="nom" required autocomplete="off">
       </label>
@@ -89,10 +139,11 @@
     </form>
   </section>
 
-  <section class="carte">
-    <div class="entete-liste">
+  <section class="carte" id="abonnements">
+    <div class="carte-titre">
+      <svg class="ico" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
       <h2>Mes abonnements</h2>
-      <span class="discret" id="compteur"></span>
+      <span class="compteur" id="compteur"></span>
     </div>
     <ul id="lignes"></ul>
   </section>
