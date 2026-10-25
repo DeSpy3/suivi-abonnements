@@ -4,49 +4,84 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Suivi d'abonnements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="app.js" defer></script>
 </head>
 <body>
 <main>
   <header>
-    <h1>Suivi d'abonnements</h1>
-    <span class="discret" id="mois"></span>
+    <h1>Abonnements</h1>
+    <p class="discret" id="mois"></p>
   </header>
 
   <section class="stats">
-    <div class="carte stat hero"><span class="stat-label">Par mois</span><strong class="stat-valeur" id="mensuel">—</strong><span class="stat-sous">Total de tous les abonnements</span></div>
-    <div class="carte stat"><span class="stat-label">Par an</span><strong class="stat-valeur" id="annuel">—</strong></div>
-    <div class="carte stat"><span class="stat-label">Par jour</span><strong class="stat-valeur" id="jour">—</strong></div>
-    <div class="carte stat"><span class="stat-label">Le plus cher</span><strong class="stat-valeur" id="plus-cher">—</strong><span class="stat-sous" id="plus-cher-nom"></span></div>
+    <div class="stat principal">
+      <span class="stat-label">Par mois</span>
+      <strong class="stat-valeur" id="mensuel">—</strong>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Par an</span>
+      <strong class="stat-valeur" id="annuel">—</strong>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Par jour</span>
+      <strong class="stat-valeur" id="jour">—</strong>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Le plus cher</span>
+      <strong class="stat-valeur" id="plus-cher">—</strong>
+      <span class="stat-sous" id="plus-cher-nom"></span>
+    </div>
   </section>
 
   <section class="graphes">
     <div class="carte">
-      <h2>Répartition par catégorie</h2>
+      <h2>Par catégorie</h2>
       <div class="donut-zone">
         <svg id="donut" viewBox="0 0 42 42" role="img" aria-label="Répartition des dépenses par catégorie"></svg>
         <ul id="legende"></ul>
       </div>
     </div>
     <div class="carte">
-      <h2>Coût mensuel par abonnement</h2>
+      <h2>Les plus coûteux</h2>
       <div id="barres"></div>
     </div>
   </section>
 
-  <section class="carte">
-    <h2>Ajouter ou modifier</h2>
-    <div id="presets" aria-label="Services courants"></div>
+  <section class="carte ajout">
+    <div class="catalogue">
+      <div class="catalogue-entete">
+        <h2>Services courants</h2>
+        <input id="recherche" type="search" placeholder="Rechercher un service…" autocomplete="off">
+      </div>
+      <div id="presets"></div>
+      <p class="vide" id="presets-vide" hidden>Aucun service ne correspond.</p>
+    </div>
+
     <form id="formulaire">
-      <input id="nom" placeholder="Nom" required>
-      <input id="prix" type="number" step="0.01" min="0.01" placeholder="Prix (€)" required>
-      <select id="frequence">
-        <option value="mensuel">Mensuel</option>
-        <option value="trimestriel">Trimestriel</option>
-        <option value="annuel">Annuel</option>
-      </select>
-      <input id="categorie" placeholder="Catégorie (optionnel)">
+      <h2 id="titre-form">Nouvel abonnement</h2>
+      <label>Nom
+        <input id="nom" required autocomplete="off">
+      </label>
+      <div class="deux">
+        <label>Prix (€)
+          <input id="prix" type="number" step="0.01" min="0.01" inputmode="decimal" required>
+        </label>
+        <label>Fréquence
+          <select id="frequence">
+            <option value="mensuel">Mensuel</option>
+            <option value="trimestriel">Trimestriel</option>
+            <option value="annuel">Annuel</option>
+          </select>
+        </label>
+      </div>
+      <label>Catégorie
+        <input id="categorie" list="liste-categories" placeholder="Optionnel" autocomplete="off">
+      </label>
+      <datalist id="liste-categories"></datalist>
       <div class="actions-form">
         <button id="valider" class="btn principal" type="submit">Ajouter</button>
         <button id="annuler" class="btn" type="button" hidden>Annuler</button>
@@ -55,7 +90,10 @@
   </section>
 
   <section class="carte">
-    <div class="entete-liste"><h2>Mes abonnements</h2><span class="discret" id="compteur"></span></div>
+    <div class="entete-liste">
+      <h2>Mes abonnements</h2>
+      <span class="discret" id="compteur"></span>
+    </div>
     <ul id="lignes"></ul>
   </section>
 </main>
