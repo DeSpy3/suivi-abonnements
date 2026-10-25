@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suivi d'abonnements</title>
+<style>
+  :root { --bg:#f6f7f9; --carte:#fff; --texte:#1c1e21; --discret:#6b7280; --bord:#e2e5ea; --accent:#3b6fd4; --danger:#c0392b; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#16181d; --carte:#1f2229; --texte:#e8eaed; --discret:#9aa0aa; --bord:#2e323b; --accent:#6c93e6; --danger:#e57365; }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; padding:2rem 1rem; background:var(--bg); color:var(--texte); font-family: system-ui, sans-serif; }
+  main { max-width: 800px; margin: 0 auto; display: grid; gap: 1rem; }
+  h1 { margin: 0 0 .5rem; font-size: 1.5rem; }
+  h2 { margin: 0 0 .75rem; font-size: 1rem; }
+  .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 1rem 1.25rem; }
+  .totaux { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .totaux .valeur { font-size: 1.6rem; font-weight: 600; }
+  .discret { color: var(--discret); font-size: .85rem; }
+  form { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: .5rem; }
+  .actions-form { grid-column: 1 / -1; display: flex; gap: .5rem; }
+  input, select, button { font: inherit; padding: .5rem .6rem; border-radius: 8px; border: 1px solid var(--bord); background: var(--bg); color: var(--texte); }
+  button { cursor: pointer; }
+  button.principal { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.danger { color: var(--danger); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: .55rem .4rem; border-bottom: 1px solid var(--bord); }
+  td.num, th.num { text-align: right; }
+  td.actions { text-align: right; white-space: nowrap; }
+  ul { margin: 0; padding-left: 1.1rem; }
+  @media (max-width: 640px) { form, .totaux { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Suivi d'abonnements</h1>
+
+  <section class="carte totaux">
+    <div><div class="discret">Par mois</div><div class="valeur" id="mensuel">—</div></div>
+    <div><div class="discret">Par an</div><div class="valeur" id="annuel">—</div></div>
+    <div><div class="discret">Abonnements</div><div class="valeur" id="nombre">—</div></div>
+  </section>
+
+  <section class="carte">
+    <h2>Ajouter / modifier</h2>
+    <form id="formulaire">
+      <input id="nom" placeholder="Nom" required>
+      <input id="prix" type="number" step="0.01" min="0.01" placeholder="Prix (€)" required>
+      <select id="frequence">
+        <option value="mensuel">Mensuel</option>
+        <option value="trimestriel">Trimestriel</option>
+        <option value="annuel">Annuel</option>
+      </select>
+      <input id="categorie" placeholder="Catégorie (optionnel)">
+      <div class="actions-form">
+        <button id="valider" class="principal" type="submit">Ajouter</button>
+        <button id="annuler" type="button" hidden>Annuler</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="carte">
+    <h2>Mes abonnements</h2>
+    <table>
+      <thead><tr><th>Nom</th><th>Catégorie</th><th>Prix</th><th class="num">Par mois</th><th></th></tr></thead>
+      <tbody id="lignes"></tbody>
+    </table>
+  </section>
+
+  <section class="carte">
+    <h2>Par catégorie (coût mensuel)</h2>
+    <ul id="categories"></ul>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const euro = (v) => Number(v).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+let enEdition = null;
+
+async function api(url, options) {
+  const rep = await fetch(url, options);
+  if (!rep.ok) throw new Error("Erreur " + rep.status);
+  return rep.status === 204 ? null : rep.json();
+}
+
+function cellule(texte, classe) {
+  const td = document.createElement("td");
+  td.textContent = texte;
+  if (classe) td.className = classe;
+  return td;
+}
+
+function bouton(texte, classe, action) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = texte;
+  b.className = classe;
+  b.onclick = action;
+  return b;
+}
+
+async function charger() {
+  const [abos, total] = await Promise.all([api("/api/abonnements"), api("/api/total")]);
+
+  $("mensuel").textContent = euro(total.mensuel);
+  $("annuel").textContent = euro(total.annuel);
+  $("nombre").textContent = total.nombre;
+
+  const cats = $("categories");
+  cats.replaceChildren();
+  for (const [nom, montant] of Object.entries(total.par_categorie)) {
+    const li = document.createElement("li");
+    li.textContent = nom + " : " + euro(montant);
+    cats.append(li);
+  }
+
+  const corps = $("lignes");
+  corps.replaceChildren();
+  for (const a of abos) {
+    const tr = document.createElement("tr");
+    tr.append(
+      cellule(a.nom),
+      cellule(a.categorie ?? "—", "discret"),
+      cellule(euro(a.prix) + " (" + a.frequence + ")"),
+      cellule(euro(a.cout_mensuel), "num")
+    );
+    const actions = document.createElement("td");
+    actions.className = "actions";
+    actions.append(
+      bouton("Modifier", "", () => editer(a)),
+      " ",
+      bouton("Supprimer", "danger", () => supprimer(a))
+    );
+    tr.append(actions);
+    corps.append(tr);
+  }
+}
+
+function editer(a) {
+  enEdition = a.id;
+  $("nom").value = a.nom;
+  $("prix").value = a.prix;
+  $("frequence").value = a.frequence;
+  $("categorie").value = a.categorie ?? "";
+  $("valider").textContent = "Enregistrer";
+  $("annuler").hidden = false;
+  $("nom").focus();
+}
+
+function reinitialiser() {
+  enEdition = null;
+  $("formulaire").reset();
+  $("valider").textContent = "Ajouter";
+  $("annuler").hidden = true;
+}
+
+async function supprimer(a) {
+  if (!confirm("Supprimer « " + a.nom + " » ?")) return;
+  try {
+    await api("/api/abonnements/" + a.id, { method: "DELETE" });
+    if (enEdition === a.id) reinitialiser();
+    await charger();
+  } catch (err) {
+    alert("Suppression impossible : " + err.message);
+  }
+}
+
+$("formulaire").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const corps = {
+    nom: $("nom").value.trim(),
+    prix: $("prix").value,
+    frequence: $("frequence").value,
+    categorie: $("categorie").value.trim() || null,
+  };
+  const url = enEdition ? "/api/abonnements/" + enEdition : "/api/abonnements";
+  try {
+    await api(url, {
+      method: enEdition ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corps),
+    });
+    reinitialiser();
+    await charger();
+  } catch (err) {
+    alert("Enregistrement impossible : " + err.message);
+  }
+});
+
+$("annuler").addEventListener("click", reinitialiser);
+
+charger();
+</script>
+</body>
+</html>
