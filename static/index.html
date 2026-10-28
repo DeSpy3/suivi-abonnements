@@ -3,150 +3,177 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Suivi d'abonnements</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Mon budget</title>
 <link rel="stylesheet" href="style.css">
 <script src="app.js" defer></script>
 </head>
 <body>
-
-<nav class="barre-nav">
-  <div class="nav-contenu">
-    <a class="marque" href="#apercu">
-      <span class="marque-logo">
-        <svg class="ico" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
-      </span>
-      <span class="marque-nom">Suivi d'abonnements</span>
-    </a>
-    <div class="onglets">
-      <a class="onglet actif" href="#apercu">
-        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-        <span>Aperçu</span>
-      </a>
-      <a class="onglet" href="#ajouter">
-        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
-        <span>Ajouter</span>
-      </a>
-      <a class="onglet" href="#abonnements">
-        <svg class="ico" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-        <span>Abonnements</span>
-      </a>
-    </div>
-    <span class="nav-mois" id="mois"></span>
-  </div>
-</nav>
-
-<main>
-  <header class="page-entete" id="apercu">
-    <h1>Aperçu du tableau de bord</h1>
-    <p>Vos abonnements et vos dépenses en un coup d'œil</p>
+<div class="appli">
+  <header class="entete">
+    <h1>Mon budget</h1>
+    <span id="date-jour"></span>
   </header>
 
-  <section class="stats">
-    <div class="stat bleu">
-      <div>
-        <span class="stat-label">Total mensuel</span>
-        <strong class="stat-valeur" id="mensuel">—</strong>
-        <span class="stat-sous" id="jour"></span>
-      </div>
-      <span class="stat-icone"><svg class="ico" viewBox="0 0 24 24"><path d="M4 10h12M4 14h9M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></svg></span>
-    </div>
-    <div class="stat vert">
-      <div>
-        <span class="stat-label">Projection annuelle</span>
-        <strong class="stat-valeur" id="annuel">—</strong>
-      </div>
-      <span class="stat-icone"><svg class="ico" viewBox="0 0 24 24"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg></span>
-    </div>
-    <div class="stat orange">
-      <div>
-        <span class="stat-label">Abonnements actifs</span>
-        <strong class="stat-valeur" id="nb">—</strong>
-      </div>
-      <span class="stat-icone"><svg class="ico" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
-    </div>
-    <div class="stat violet">
-      <div>
-        <span class="stat-label">Le plus cher</span>
-        <strong class="stat-valeur" id="plus-cher">—</strong>
-        <span class="stat-sous" id="plus-cher-nom"></span>
-      </div>
-      <span class="stat-icone"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span>
-    </div>
-  </section>
+  <nav class="onglets" role="tablist" aria-label="Sections">
+    <button class="onglet" role="tab" type="button" data-onglet="apercu">Vue d'ensemble</button>
+    <button class="onglet" role="tab" type="button" data-onglet="abonnements">Abonnements</button>
+    <button class="onglet" role="tab" type="button" data-onglet="depenses">Dépenses</button>
+  </nav>
 
-  <section class="graphes">
-    <div class="carte">
-      <div class="carte-titre">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M21.2 15.9A10 10 0 1 1 8 2.8"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-        <h2>Dépenses par catégorie <span class="precision">(mensuel)</span></h2>
+  <!-- ---------- Vue d'ensemble ---------- -->
+  <div class="grille-apercu" data-panneau="apercu" role="tabpanel">
+    <section class="centre">
+      <div class="kpis">
+        <button class="kpi" id="kpi-budget" type="button" title="Cliquer pour définir le budget">
+          <span class="kpi-label">Budget mensuel</span><strong id="budget">—</strong>
+        </button>
+        <div class="kpi">
+          <span class="kpi-label">Dépenses du mois</span><strong id="mensuel">—</strong>
+          <span class="kpi-detail" id="detail-mensuel"></span>
+        </div>
+        <div class="kpi accent" id="kpi-reste">
+          <span class="kpi-label">Il te reste</span><strong id="reste">—</strong>
+        </div>
       </div>
-      <div class="barres" id="categories"></div>
-    </div>
-    <div class="carte">
-      <div class="carte-titre">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
-        <h2>Les plus coûteux <span class="precision">(mensuel)</span></h2>
-      </div>
-      <div class="barres" id="barres"></div>
-    </div>
-  </section>
 
-  <section class="carte ajout" id="ajouter">
-    <div class="catalogue">
-      <div class="carte-titre">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-        <h2>Services courants</h2>
+      <div class="panneau">
+        <h2 class="titre-section">Dépenses par catégorie</h2>
+        <div class="donut-zone">
+          <svg id="donut" viewBox="0 0 42 42" role="img" aria-label="Répartition par catégorie"></svg>
+          <ul id="legende"></ul>
+        </div>
       </div>
-      <div class="recherche-zone">
-        <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="recherche" type="search" placeholder="Rechercher un service…" autocomplete="off">
-      </div>
-      <div id="presets"></div>
-      <p class="vide" id="presets-vide" hidden>Aucun service ne correspond.</p>
-    </div>
 
-    <form id="formulaire">
-      <div class="carte-titre">
-        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
-        <h2 id="titre-form">Nouvel abonnement</h2>
+      <div class="duo">
+        <div class="panneau">
+          <h2 class="titre-section">6 prochains mois</h2>
+          <div id="projection"></div>
+        </div>
+        <div class="panneau">
+          <h2 class="titre-section">Budgets par catégorie</h2>
+          <div id="budgets"></div>
+        </div>
       </div>
-      <label>Nom
-        <input id="nom" required autocomplete="off">
-      </label>
-      <div class="deux">
-        <label>Prix (€)
-          <input id="prix" type="number" step="0.01" min="0.01" inputmode="decimal" required>
-        </label>
-        <label>Fréquence
-          <select id="frequence">
-            <option value="mensuel">Mensuel</option>
-            <option value="trimestriel">Trimestriel</option>
-            <option value="annuel">Annuel</option>
-          </select>
-        </label>
-      </div>
-      <label>Catégorie
-        <input id="categorie" list="liste-categories" placeholder="Optionnel" autocomplete="off">
-      </label>
-      <datalist id="liste-categories"></datalist>
-      <div class="actions-form">
-        <button id="valider" class="btn principal" type="submit">Ajouter</button>
-        <button id="annuler" class="btn" type="button" hidden>Annuler</button>
-      </div>
-    </form>
-  </section>
+    </section>
 
-  <section class="carte" id="abonnements">
-    <div class="carte-titre">
-      <svg class="ico" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-      <h2>Mes abonnements</h2>
-      <span class="compteur" id="compteur"></span>
+    <aside class="panneau">
+      <h2 class="titre-section">Prochains prélèvements</h2>
+      <ul id="prochains"></ul>
+    </aside>
+  </div>
+
+  <!-- ---------- Abonnements ---------- -->
+  <div class="grille-deux" data-panneau="abonnements" role="tabpanel" hidden>
+    <aside class="panneau" id="ajouter">
+      <h2 class="titre-section" id="titre-form">Ajouter un abonnement</h2>
+      <input id="recherche" type="search" placeholder="Rechercher un service…" autocomplete="off"
+             aria-label="Rechercher un service prédéfini" title="Entrée : choisir le premier résultat">
+      <div id="presets" role="list" aria-label="Services prédéfinis"></div>
+      <form id="formulaire">
+        <label>Nom <input id="nom" required autocomplete="off"></label>
+        <div class="deux">
+          <label>Prix (€) <input id="prix" type="number" step="0.01" min="0.01" inputmode="decimal" required></label>
+          <label>Fréquence
+            <select id="frequence">
+              <option value="mensuel">Mensuel</option>
+              <option value="trimestriel">Trimestriel</option>
+              <option value="annuel">Annuel</option>
+            </select>
+          </label>
+        </div>
+        <label>Catégorie <input id="categorie" list="liste-categories" placeholder="Optionnel" autocomplete="off"></label>
+        <label>Date d'un prélèvement <input id="date" type="date"></label>
+        <div class="actions-form">
+          <button id="valider" class="btn principal" type="submit">Ajouter</button>
+          <button id="annuler" class="btn" type="button" hidden>Annuler</button>
+        </div>
+      </form>
+    </aside>
+
+    <section class="panneau">
+      <div class="entete-liste">
+        <h2 class="titre-section">Mes abonnements</h2>
+        <span class="discret" id="compteur"></span>
+      </div>
+      <ul id="lignes"></ul>
+    </section>
+  </div>
+
+  <!-- ---------- Dépenses ---------- -->
+  <div class="grille-deux" data-panneau="depenses" role="tabpanel" hidden>
+    <aside class="panneau" id="ajouter-depense">
+      <h2 class="titre-section" id="titre-depense">Ajouter une dépense</h2>
+      <div class="bascule" role="group" aria-label="Type de dépense">
+        <button type="button" data-type="ponctuelle" aria-pressed="true">Ponctuelle</button>
+        <button type="button" data-type="charge" aria-pressed="false">Charge fixe</button>
+      </div>
+      <p class="aide discret" id="aide-depense"></p>
+      <form id="form-depense">
+        <label>Libellé <input id="dep-libelle" required autocomplete="off"></label>
+        <div class="deux">
+          <label>Montant (€) <input id="dep-montant" type="number" step="0.01" min="0.01" inputmode="decimal" required></label>
+          <label class="seulement-charge">Fréquence
+            <select id="dep-frequence">
+              <option value="mensuel">Mensuel</option>
+              <option value="trimestriel">Trimestriel</option>
+              <option value="annuel">Annuel</option>
+            </select>
+          </label>
+          <label class="seulement-ponctuelle">Date <input id="dep-date" type="date"></label>
+        </div>
+        <label>Catégorie <input id="dep-categorie" list="liste-categories" placeholder="Optionnel" autocomplete="off"></label>
+        <label class="seulement-charge">Date d'un prélèvement <input id="dep-prelevement" type="date"></label>
+        <div class="actions-form">
+          <button id="dep-valider" class="btn principal" type="submit">Ajouter</button>
+          <button id="dep-annuler" class="btn" type="button" hidden>Annuler</button>
+        </div>
+      </form>
+    </aside>
+
+    <div class="centre">
+      <section class="panneau">
+        <div class="entete-liste">
+          <h2 class="titre-section">Dépenses ponctuelles</h2>
+          <div class="nav-mois">
+            <button class="icone-btn" id="mois-precedent" type="button" title="Mois précédent">‹</button>
+            <strong id="mois-affiche"></strong>
+            <button class="icone-btn" id="mois-suivant" type="button" title="Mois suivant">›</button>
+          </div>
+        </div>
+        <p class="total-mois"><span class="discret">Total du mois</span> <strong id="total-depenses">—</strong></p>
+        <div class="meta" id="repartition"></div>
+        <ul id="lignes-depenses"></ul>
+      </section>
+
+      <section class="panneau">
+        <div class="entete-liste">
+          <h2 class="titre-section">Charges fixes</h2>
+          <span class="discret" id="compteur-charges"></span>
+        </div>
+        <ul id="lignes-charges"></ul>
+      </section>
     </div>
-    <ul id="lignes"></ul>
-  </section>
-</main>
+  </div>
+</div>
+
+<datalist id="liste-categories"></datalist>
+
+<dialog id="dialogue" aria-labelledby="dialogue-titre">
+  <form method="dialog">
+    <h3 id="dialogue-titre"></h3>
+    <p id="dialogue-texte" class="discret"></p>
+    <label id="dialogue-champ">Montant (€)
+      <input id="dialogue-montant" type="number" step="0.01" min="0" inputmode="decimal">
+    </label>
+    <!-- OK en premier : la touche Entrée déclenche le premier bouton. L'ordre affiché est inversé en CSS -->
+    <div class="actions-form">
+      <button class="btn principal" id="dialogue-ok" value="ok">OK</button>
+      <button class="btn" id="dialogue-effacer" value="effacer" formnovalidate>Effacer</button>
+      <button class="btn" value="annuler" formnovalidate autofocus>Annuler</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toasts" aria-live="polite"></div>
 </body>
 </html>
