@@ -1,0 +1,55 @@
+MON BUDGET — LICENCE D'UTILISATION
+
+Copyright (c) 2026 Maël Sohier. Tous droits réservés.
+
+1. Propriété
+
+Le logiciel « Mon budget » (code source, interface, textes, icône et
+documentation, ci-après « le Logiciel ») est une œuvre de l'esprit protégée par
+le Code de la propriété intellectuelle (articles L111-1 et L112-2). Il est la
+propriété exclusive de Maël Sohier (« l'Auteur »).
+
+2. Ce que vous pouvez faire
+
+L'Auteur vous accorde gratuitement, pour un usage personnel et non commercial,
+le droit non exclusif et non transférable de télécharger, d'installer et
+d'utiliser le Logiciel sur vos propres appareils.
+
+3. Ce qui est interdit sans l'accord écrit préalable de l'Auteur
+
+- vendre, louer ou concéder le Logiciel, ou l'utiliser dans un cadre commercial
+  ou professionnel ;
+- le redistribuer ou le publier, sous sa forme d'origine ou modifiée ;
+- créer et diffuser des œuvres dérivées ;
+- supprimer ou modifier les mentions de propriété et de copyright.
+
+Les conditions d'utilisation de GitHub permettent de consulter le dépôt public
+et d'en créer une copie (« fork ») sur GitHub. Cela ne confère aucun autre
+droit que ceux décrits dans la présente licence.
+
+4. Absence de garantie
+
+Le Logiciel est fourni « tel quel », sans garantie d'aucune sorte. Il s'agit
+d'un outil d'aide au suivi d'un budget personnel, qui ne constitue pas un
+conseil financier. Dans les limites permises par la loi, l'Auteur ne pourra
+être tenu responsable d'aucun dommage résultant de l'utilisation ou de
+l'impossibilité d'utiliser le Logiciel, y compris la perte de données.
+
+5. Composants tiers
+
+Le Logiciel s'appuie sur des bibliothèques libres (FastAPI, Starlette,
+Pydantic, Uvicorn, platformdirs, etc.) installées séparément, qui restent
+soumises à leurs propres licences (MIT, BSD-3-Clause, Apache-2.0, PSF-2.0).
+La liste figure dans CONFORMITE.md.
+
+6. Marques
+
+Les noms et logos des services cités (Netflix, Spotify, etc.) appartiennent à
+leurs propriétaires respectifs. Ils servent uniquement à identifier ces
+services. Le Logiciel n'est affilié à aucun d'entre eux.
+
+7. Droit applicable
+
+La présente licence est régie par le droit français.
+
+Contact : https://github.com/DeSpy3
