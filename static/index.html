@@ -66,9 +66,14 @@
   <div class="grille-deux" data-panneau="abonnements" role="tabpanel" hidden>
     <aside class="panneau" id="ajouter">
       <h2 class="titre-section" id="titre-form">Ajouter un abonnement</h2>
-      <input id="recherche" type="search" placeholder="Rechercher un service…" autocomplete="off"
-             aria-label="Rechercher un service prédéfini" title="Entrée : choisir le premier résultat">
-      <div id="presets" role="list" aria-label="Services prédéfinis"></div>
+      <div class="filtres-presets">
+        <input id="recherche" type="search" placeholder="Rechercher un service…" autocomplete="off"
+               aria-label="Rechercher un service prédéfini" title="Entrée : choisir le premier résultat">
+        <select id="filtre-presets" aria-label="Filtrer par catégorie">
+          <option value="">Toutes</option>
+        </select>
+      </div>
+      <div id="presets" role="group" aria-label="Services prédéfinis"></div>
       <form id="formulaire">
         <label>Nom <input id="nom" required autocomplete="off"></label>
         <div class="deux">

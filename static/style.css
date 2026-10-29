@@ -118,16 +118,21 @@ button.kpi:hover { border-color: var(--accent); }
 .logo.badge { color: #fff; font-weight: 700; font-size: calc(var(--taille) * .42); }
 
 /* Formulaire */
-#recherche { margin-bottom: .7rem; }
+.filtres-presets { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; margin-bottom: .7rem; }
+#filtre-presets { width: auto; max-width: 9.5rem; }
 #presets {
-  max-height: 264px; overflow: auto; margin-bottom: 1rem;
+  max-height: 320px; overflow: auto; margin-bottom: 1rem;
   border: 1px solid var(--bord); border-radius: 10px; background: var(--carte);
 }
 .service {
   display: flex; align-items: center; gap: .65rem; width: 100%; padding: .45rem .65rem;
   background: none; border: 0; border-top: 1px solid var(--bord); color: var(--texte); font: inherit; text-align: left; cursor: pointer;
 }
-.service:first-child { border-top: 0; }
+.service:first-child, .groupe-presets + .service { border-top: 0; }
+.groupe-presets {
+  position: sticky; top: 0; z-index: 1; padding: .35rem .65rem; background: var(--panneau);
+  color: var(--discret); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+}
 .service:hover { background: rgba(255, 255, 255, .04); }
 .service:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .service.actif { background: var(--accent-doux); }

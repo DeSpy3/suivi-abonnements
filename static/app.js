@@ -120,7 +120,7 @@ function creerLogo(nom, slug, taille) {
     tuile.textContent = (nom.trim()[0] || "?").toUpperCase();
   };
 
-  if (preset) {
+  if (preset && preset.logo !== false) {
     const img = document.createElement("img");
     img.alt = "";
     img.src = "logos/" + preset.slug + ".svg";
@@ -135,15 +135,22 @@ function creerLogo(nom, slug, taille) {
 /* ---------- Services prédéfinis ---------- */
 function rendrePresets() {
   const q = normaliser($("recherche").value.trim());
+  const filtre = $("filtre-presets").value;
   const zone = $("presets");
   zone.replaceChildren();
-  const liste = PRESETS.filter((p) => normaliser(p.nom + " " + p.categorie).includes(q));
+  const liste = PRESETS.filter((p) =>
+    (!filtre || p.categorie === filtre) && normaliser(p.nom + " " + p.categorie).includes(q));
 
+  let groupe = null;
   for (const p of liste) {
+    // Titre de groupe à chaque nouvelle catégorie (presets.json est rangé par catégorie)
+    if (!filtre && p.categorie !== groupe) {
+      groupe = p.categorie;
+      zone.append(h("div", "groupe-presets", groupe));
+    }
     const actif = p.slug === iconeChoisie;
     const ligne = h("button", "service" + (actif ? " actif" : ""));
     ligne.type = "button";
-    ligne.setAttribute("role", "listitem");
     ligne.setAttribute("aria-pressed", actif);
     const infos = h("span", "service-infos");
     infos.append(h("strong", "", p.nom), h("span", "", p.categorie));
@@ -497,6 +504,7 @@ $("formulaire").addEventListener("submit", async (e) => {
 
 $("annuler").addEventListener("click", reinitialiser);
 $("recherche").addEventListener("input", rendrePresets);
+$("filtre-presets").addEventListener("change", rendrePresets);
 $("recherche").addEventListener("keydown", (e) => {
   if (e.key !== "Enter") return;
   e.preventDefault();
@@ -686,6 +694,12 @@ async function init() {
   choisirTypeDepense("ponctuelle");
   reinitialiserDepense();
   PRESETS = await fetch("presets.json").then((r) => r.json()).catch(() => []);
+  // Une option de filtre par catégorie, dans l'ordre du catalogue
+  for (const c of new Set(PRESETS.map((p) => p.categorie))) {
+    const o = document.createElement("option");
+    o.value = o.textContent = c;
+    $("filtre-presets").append(o);
+  }
   rendrePresets();
   await charger();
 }

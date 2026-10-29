@@ -1,22 +1,67 @@
 [
   {"slug": "netflix", "nom": "Netflix", "couleur": "E50914", "categorie": "Streaming"},
-  {"slug": "disneyplus", "nom": "Disney+", "couleur": "113CCF", "categorie": "Streaming"},
+  {"slug": "disneyplus", "nom": "Disney+", "couleur": "113CCF", "categorie": "Streaming", "logo": false},
   {"slug": "amazonprime", "nom": "Amazon Prime", "couleur": "00A8E1", "categorie": "Streaming"},
+  {"slug": "canalplus", "nom": "Canal+", "couleur": "000000", "categorie": "Streaming", "logo": false},
+  {"slug": "appletv", "nom": "Apple TV+", "couleur": "000000", "categorie": "Streaming"},
+  {"slug": "paramountplus", "nom": "Paramount+", "couleur": "0064FF", "categorie": "Streaming"},
+  {"slug": "max", "nom": "Max", "couleur": "002BE7", "categorie": "Streaming"},
+  {"slug": "crunchyroll", "nom": "Crunchyroll", "couleur": "FF5E00", "categorie": "Streaming"},
   {"slug": "youtube", "nom": "YouTube Premium", "couleur": "FF0000", "categorie": "Streaming"},
-  {"slug": "canalplus", "nom": "Canal+", "couleur": "000000", "categorie": "Streaming"},
   {"slug": "twitch", "nom": "Twitch", "couleur": "9146FF", "categorie": "Streaming"},
-  {"slug": "spotify", "nom": "Spotify", "couleur": "1DB954", "categorie": "Musique"},
+
+  {"slug": "spotify", "nom": "Spotify", "couleur": "1ED760", "categorie": "Musique"},
+  {"slug": "deezer", "nom": "Deezer", "couleur": "A238FF", "categorie": "Musique"},
   {"slug": "applemusic", "nom": "Apple Music", "couleur": "FA243C", "categorie": "Musique"},
-  {"slug": "deezer", "nom": "Deezer", "couleur": "FEAA2D", "categorie": "Musique"},
-  {"slug": "icloud", "nom": "iCloud", "couleur": "3693F3", "categorie": "Cloud"},
-  {"slug": "googleone", "nom": "Google One", "couleur": "4285F4", "categorie": "Cloud"},
-  {"slug": "dropbox", "nom": "Dropbox", "couleur": "0061FF", "categorie": "Cloud"},
+  {"slug": "youtubemusic", "nom": "YouTube Music", "couleur": "FF0000", "categorie": "Musique"},
+  {"slug": "tidal", "nom": "Tidal", "couleur": "000000", "categorie": "Musique"},
+  {"slug": "soundcloud", "nom": "SoundCloud Go", "couleur": "FF5500", "categorie": "Musique"},
+  {"slug": "audible", "nom": "Audible", "couleur": "F8991C", "categorie": "Musique"},
+
   {"slug": "openai", "nom": "ChatGPT", "couleur": "412991", "categorie": "IA"},
   {"slug": "claude", "nom": "Claude", "couleur": "D97757", "categorie": "IA"},
-  {"slug": "github", "nom": "GitHub", "couleur": "181717", "categorie": "Dev"},
-  {"slug": "notion", "nom": "Notion", "couleur": "000000", "categorie": "Productivité"},
+  {"slug": "googlegemini", "nom": "Google Gemini", "couleur": "8E75B2", "categorie": "IA"},
+  {"slug": "mistralai", "nom": "Le Chat (Mistral)", "couleur": "FA520F", "categorie": "IA"},
+  {"slug": "perplexity", "nom": "Perplexity", "couleur": "1FB8CD", "categorie": "IA"},
+  {"slug": "githubcopilot", "nom": "GitHub Copilot", "couleur": "000000", "categorie": "IA"},
+
+  {"slug": "icloud", "nom": "iCloud+", "couleur": "3693F3", "categorie": "Cloud"},
+  {"slug": "googleone", "nom": "Google One", "couleur": "4285F4", "categorie": "Cloud", "logo": false},
+  {"slug": "dropbox", "nom": "Dropbox", "couleur": "0061FF", "categorie": "Cloud"},
+  {"slug": "mega", "nom": "MEGA", "couleur": "D9272E", "categorie": "Cloud"},
+
   {"slug": "microsoftoffice", "nom": "Microsoft 365", "couleur": "D83B01", "categorie": "Productivité"},
+  {"slug": "notion", "nom": "Notion", "couleur": "000000", "categorie": "Productivité"},
+  {"slug": "canva", "nom": "Canva Pro", "couleur": "00C4CC", "categorie": "Productivité"},
+  {"slug": "adobecreativecloud", "nom": "Adobe Creative Cloud", "couleur": "DA1F26", "categorie": "Productivité"},
+  {"slug": "figma", "nom": "Figma", "couleur": "F24E1E", "categorie": "Productivité"},
+  {"slug": "duolingo", "nom": "Duolingo Super", "couleur": "58CC02", "categorie": "Productivité"},
+
+  {"slug": "github", "nom": "GitHub", "couleur": "181717", "categorie": "Dev"},
+
   {"slug": "playstation", "nom": "PlayStation Plus", "couleur": "0070D1", "categorie": "Jeux"},
   {"slug": "xbox", "nom": "Xbox Game Pass", "couleur": "107C10", "categorie": "Jeux"},
-  {"slug": "nordvpn", "nom": "NordVPN", "couleur": "4687FF", "categorie": "VPN"}
+  {"slug": "nintendoswitch", "nom": "Nintendo Switch Online", "couleur": "E60012", "categorie": "Jeux"},
+  {"slug": "ubisoft", "nom": "Ubisoft+", "couleur": "000000", "categorie": "Jeux"},
+  {"slug": "ea", "nom": "EA Play", "couleur": "000000", "categorie": "Jeux"},
+
+  {"slug": "nordvpn", "nom": "NordVPN", "couleur": "4687FF", "categorie": "VPN & sécurité"},
+  {"slug": "protonvpn", "nom": "Proton VPN", "couleur": "66DEB1", "categorie": "VPN & sécurité"},
+  {"slug": "surfshark", "nom": "Surfshark", "couleur": "1EBFBF", "categorie": "VPN & sécurité"},
+  {"slug": "expressvpn", "nom": "ExpressVPN", "couleur": "DA3940", "categorie": "VPN & sécurité"},
+  {"slug": "protonmail", "nom": "Proton Mail", "couleur": "6D4AFF", "categorie": "VPN & sécurité"},
+  {"slug": "bitwarden", "nom": "Bitwarden", "couleur": "175DDC", "categorie": "VPN & sécurité"},
+  {"slug": "1password", "nom": "1Password", "couleur": "145FE4", "categorie": "VPN & sécurité"},
+
+  {"slug": "orange", "nom": "Orange", "couleur": "FF7900", "categorie": "Téléphone & Internet"},
+  {"slug": "free", "nom": "Free", "couleur": "CD1E25", "categorie": "Téléphone & Internet", "logo": false},
+  {"slug": "sfr", "nom": "SFR", "couleur": "E2001A", "categorie": "Téléphone & Internet", "logo": false},
+  {"slug": "bouyguestelecom", "nom": "Bouygues Telecom", "couleur": "00295F", "categorie": "Téléphone & Internet", "logo": false},
+
+  {"slug": "basicfit", "nom": "Basic-Fit", "couleur": "FE7000", "categorie": "Sport & bien-être", "logo": false},
+  {"slug": "strava", "nom": "Strava", "couleur": "FC4C02", "categorie": "Sport & bien-être"},
+  {"slug": "headspace", "nom": "Headspace", "couleur": "F47D31", "categorie": "Sport & bien-être"},
+
+  {"slug": "uber", "nom": "Uber One", "couleur": "000000", "categorie": "Livraison"},
+  {"slug": "deliveroo", "nom": "Deliveroo Plus", "couleur": "00CCBC", "categorie": "Livraison"}
 ]
