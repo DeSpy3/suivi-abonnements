@@ -5,13 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mon budget</title>
 <link rel="stylesheet" href="style.css">
+<script>
+  // Appliqué avant l'affichage pour éviter un flash de l'ancien thème.
+  // « auto » suit le réglage clair/sombre du système.
+  function appliquerTheme(choix) {
+    const systemeClair = matchMedia("(prefers-color-scheme: light)").matches;
+    document.documentElement.dataset.theme = choix === "auto" ? (systemeClair ? "clair" : "violet") : choix;
+  }
+  let themeChoisi = "auto";
+  try { themeChoisi = localStorage.getItem("theme") || "auto"; } catch (e) { /* stockage indisponible */ }
+  appliquerTheme(themeChoisi);
+</script>
 <script src="app.js" defer></script>
 </head>
 <body>
 <div class="appli">
   <header class="entete">
     <h1>Mon budget</h1>
-    <span id="date-jour"></span>
+    <div class="entete-droite">
+      <span id="date-jour"></span>
+      <select id="choix-theme" aria-label="Thème de couleurs">
+        <option value="auto">Thème : automatique</option>
+        <option value="violet">Violet sombre</option>
+        <option value="nuit">Bleu nuit</option>
+        <option value="foret">Forêt</option>
+        <option value="clair">Clair</option>
+        <option value="creme">Crème</option>
+      </select>
+    </div>
   </header>
 
   <nav class="onglets" role="tablist" aria-label="Sections">

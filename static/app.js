@@ -1,10 +1,16 @@
 const $ = (id) => document.getElementById(id);
 const euro = (v) => Number(v).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 const UNITE = { mensuel: "mois", trimestriel: "trimestre", annuel: "an" };
-// Couleurs fixes pour certaines catégories, nuances de violet pour les autres
+// Couleurs fixes pour certaines catégories, nuances du thème pour les autres
 const COULEURS_CATEGORIES = { IA: "#f08a4b", Musique: "#e5484d", Cloud: "#3b82f6" };
-const COULEURS_ZONES = { "Abonnements": "#8b5cf6", "Charges fixes": "#3b82f6", "Dépenses ponctuelles": "#f08a4b" };
-const PALETTE = ["#8b5cf6", "#c4b5fd", "#6d28d9", "#a78bfa", "#5b21b6", "#ddd6fe"];
+// Les autres couleurs des graphiques viennent du thème (variables CSS de style.css)
+const couleurTheme = (nom) => getComputedStyle(document.documentElement).getPropertyValue(nom).trim();
+const palette = () => [1, 2, 3, 4, 5, 6].map((i) => couleurTheme("--serie-" + i));
+const couleursZones = () => ({
+  "Abonnements": couleurTheme("--accent"),
+  "Charges fixes": couleurTheme("--zone-charges"),
+  "Dépenses ponctuelles": couleurTheme("--zone-ponctuel"),
+});
 const NS = "http://www.w3.org/2000/svg";
 const RAYON = 15.9155; // circonférence = 100, donc les pourcentages se lisent directement
 
@@ -95,9 +101,10 @@ function dansCombienDeJours(iso) {
 // Associe une couleur à chaque catégorie, dans l'ordre de la liste
 function couleursCategories(categories) {
   const couleurs = {};
+  const teintes = palette();
   let i = 0;
   for (const c of categories) {
-    couleurs[c.nom] = COULEURS_CATEGORIES[c.nom] ?? PALETTE[i++ % PALETTE.length];
+    couleurs[c.nom] = COULEURS_CATEGORIES[c.nom] ?? teintes[i++ % teintes.length];
   }
   return couleurs;
 }
@@ -386,7 +393,7 @@ async function charger() {
   $("reste").textContent = s.reste === null ? "—" : euro(s.reste);
   $("kpi-reste").classList.toggle("negatif", s.reste !== null && Number(s.reste) < 0);
 
-  rendreDonut("donut", "legende", s.zones, s.mensuel, COULEURS_ZONES, aides > 0 ? "net / mois" : "par mois");
+  rendreDonut("donut", "legende", s.zones, s.mensuel, couleursZones(), aides > 0 ? "net / mois" : "par mois");
   if (aides > 0) {
     // Les aides n'ont pas de part dans le donut : une ligne en plus dans la légende
     const li = h("li");
@@ -698,6 +705,23 @@ function changerMois(n) {
 }
 $("mois-precedent").addEventListener("click", () => changerMois(-1));
 $("mois-suivant").addEventListener("click", () => changerMois(1));
+
+/* ---------- Thème ---------- */
+// appliquerTheme() et themeChoisi sont définis dans index.html, avant le chargement de la page
+$("choix-theme").value = themeChoisi;
+$("choix-theme").addEventListener("change", () => {
+  themeChoisi = $("choix-theme").value;
+  try { localStorage.setItem("theme", themeChoisi); } catch { /* stockage indisponible : choix non mémorisé */ }
+  appliquerTheme(themeChoisi);
+  charger(); // redessine les graphiques avec les couleurs du thème
+});
+// En mode automatique, suit le passage clair/sombre du système
+matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+  if (themeChoisi === "auto") {
+    appliquerTheme("auto");
+    charger();
+  }
+});
 
 /* ---------- Onglets ---------- */
 const ONGLETS = ["apercu", "abonnements", "depenses"];

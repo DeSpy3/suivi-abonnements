@@ -39,7 +39,7 @@ Python, FastAPI, Pydantic, SQLite (module sqlite3), platformdirs. Front : HTML/C
 ## État actuel
 Fait : CRUD, SQLite, catalogue de services avec logos, date de prélèvement, budget global et par catégorie,
 projection sur 6 mois, prochains prélèvements, donut par grande zone (abonnements, charges fixes, ponctuel) dans la vue d'ensemble et donut des abonnements par catégorie dans leur onglet. Aides régulières et remboursements déduits du total (net) et des catégories. Catalogue de services rangé par catégorie avec filtre. Interface en 3 onglets : Vue d'ensemble, Abonnements,
-Dépenses (ponctuelles par mois + charges fixes). Design sombre violet inspiré d'une app de finances perso (catégories IA en orange, Musique en rouge, Cloud en bleu).
+Dépenses (ponctuelles par mois + charges fixes). Design inspiré d'une app de finances perso (catégories IA en orange, Musique en rouge, Cloud en bleu), avec 5 thèmes au choix dans l'en-tête : Violet sombre (par défaut), Bleu nuit, Forêt, Clair, Crème, ou automatique (suit le système). Les couleurs sont des variables CSS par thème (`:root[data-theme=…]` dans `style.css`) ; les graphiques lisent `--serie-1…6`, `--zone-*` et `--accent`. Choix mémorisé dans `localStorage`.
 Une ancienne version bleue du style peut exister dans la branche `style-bleu`.
 ## Préférences d'interface
 - Les services prédéfinis (`presets.json`) doivent s'afficher en **liste** (une ligne par service : logo, nom, catégorie), avec la recherche conservée. Pas en pastilles.

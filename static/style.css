@@ -1,20 +1,75 @@
-:root {
+/* ---------- Thèmes ----------
+   Chaque thème redéfinit les mêmes variables. Le thème est choisi par l'attribut
+   data-theme de <html> (posé par le script en tête de index.html).
+   --serie-1…6 : couleurs des catégories dans les graphiques, lues par app.js */
+:root, :root[data-theme="violet"] {
   color-scheme: dark;
   --fond: #121016; --panneau: #1a1820; --carte: #24212b; --bord: #322e3a;
   --texte: #f1eef6; --discret: #9a94a6;
-  --accent: #8b5cf6; --accent-doux: rgba(139, 92, 246, .16); --danger: #f0524b; --recu: #3ecf8e;
+  --accent: #8b5cf6; --accent-doux: rgba(139, 92, 246, .16); --sur-accent: #fff;
+  --danger: #f0524b; --recu: #3ecf8e; --recu-doux: rgba(62, 207, 142, .14);
+  --halo: #2a1b4d; --barre: #4c3a7a; --survol: rgba(255, 255, 255, .04);
+  --ombre: rgba(0, 0, 0, .4); --voile: rgba(0, 0, 0, .6);
+  --serie-1: #8b5cf6; --serie-2: #c4b5fd; --serie-3: #6d28d9; --serie-4: #a78bfa; --serie-5: #5b21b6; --serie-6: #ddd6fe;
+  --zone-charges: #3b82f6; --zone-ponctuel: #f08a4b;
   --rayon: 14px;
+}
+:root[data-theme="nuit"] {
+  color-scheme: dark;
+  --fond: #0b1220; --panneau: #111a2c; --carte: #18233a; --bord: #24324d;
+  --texte: #e8eefb; --discret: #8a9bb8;
+  --accent: #3b82f6; --accent-doux: rgba(59, 130, 246, .16); --sur-accent: #fff;
+  --danger: #f05252; --recu: #34d399; --recu-doux: rgba(52, 211, 153, .14);
+  --halo: #12305e; --barre: #24427a; --survol: rgba(255, 255, 255, .04);
+  --ombre: rgba(0, 0, 0, .45); --voile: rgba(0, 0, 0, .6);
+  --serie-1: #3b82f6; --serie-2: #93c5fd; --serie-3: #1d4ed8; --serie-4: #60a5fa; --serie-5: #1e40af; --serie-6: #bfdbfe;
+  --zone-charges: #a78bfa; --zone-ponctuel: #f59e0b;
+}
+:root[data-theme="foret"] {
+  color-scheme: dark;
+  --fond: #0e1512; --panneau: #141e1a; --carte: #1b2822; --bord: #26372f;
+  --texte: #e9f3ee; --discret: #8ea69a;
+  --accent: #2dd4bf; --accent-doux: rgba(45, 212, 191, .15); --sur-accent: #06231f;
+  --danger: #f87171; --recu: #a3e635; --recu-doux: rgba(163, 230, 53, .14);
+  --halo: #123b33; --barre: #1f5a4f; --survol: rgba(255, 255, 255, .04);
+  --ombre: rgba(0, 0, 0, .45); --voile: rgba(0, 0, 0, .6);
+  --serie-1: #2dd4bf; --serie-2: #99f6e4; --serie-3: #0f766e; --serie-4: #5eead4; --serie-5: #115e59; --serie-6: #ccfbf1;
+  --zone-charges: #60a5fa; --zone-ponctuel: #fbbf24;
+}
+:root[data-theme="clair"] {
+  color-scheme: light;
+  --fond: #f5f4f9; --panneau: #ffffff; --carte: #f0eef5; --bord: #e2deeb;
+  --texte: #1c1924; --discret: #6a6478;
+  --accent: #7c3aed; --accent-doux: rgba(124, 58, 237, .10); --sur-accent: #fff;
+  --danger: #dc2626; --recu: #15803d; --recu-doux: rgba(21, 128, 61, .10);
+  --halo: #e9e1fb; --barre: #cbbdf3; --survol: rgba(0, 0, 0, .035);
+  --ombre: rgba(30, 20, 60, .12); --voile: rgba(20, 15, 30, .35);
+  --serie-1: #7c3aed; --serie-2: #a78bfa; --serie-3: #5b21b6; --serie-4: #c4b5fd; --serie-5: #4c1d95; --serie-6: #9f7aea;
+  --zone-charges: #2563eb; --zone-ponctuel: #ea580c;
+}
+:root[data-theme="creme"] {
+  color-scheme: light;
+  --fond: #f6f1e7; --panneau: #fffcf6; --carte: #f1e9db; --bord: #e3d7c3;
+  --texte: #2a241c; --discret: #7a6d5b;
+  --accent: #c2410c; --accent-doux: rgba(194, 65, 12, .10); --sur-accent: #fff;
+  --danger: #b91c1c; --recu: #3f7d3a; --recu-doux: rgba(63, 125, 58, .12);
+  --halo: #f3dcc4; --barre: #e7b897; --survol: rgba(0, 0, 0, .035);
+  --ombre: rgba(60, 40, 10, .12); --voile: rgba(30, 20, 10, .35);
+  --serie-1: #c2410c; --serie-2: #f59e0b; --serie-3: #9a3412; --serie-4: #fdba74; --serie-5: #7c2d12; --serie-6: #d97706;
+  --zone-charges: #0f766e; --zone-ponctuel: #6d28d9;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body {
   margin: 0; min-height: 100vh; color: var(--texte);
   font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: radial-gradient(900px 380px at 50% -8%, #2a1b4d, transparent), var(--fond);
+  background: radial-gradient(900px 380px at 50% -8%, var(--halo), transparent), var(--fond);
 }
 .appli { max-width: 1320px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; display: grid; gap: 1rem; }
 .entete { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
 .entete h1 { margin: 0; font-size: 1.5rem; letter-spacing: -.01em; }
+.entete-droite { display: flex; align-items: center; gap: .9rem; flex-wrap: wrap; }
+#choix-theme { width: auto; padding: .3rem .6rem; font-size: .85rem; }
 #date-jour { color: var(--discret); font-size: .85rem; text-transform: capitalize; }
 .discret { color: var(--discret); font-size: .85rem; }
 .vide { color: var(--discret); font-size: .9rem; text-align: center; padding: 1rem 0; margin: 0; }
@@ -33,7 +88,7 @@ body {
   background: none; color: var(--discret); cursor: pointer; white-space: nowrap;
 }
 .onglet:hover, .bascule button:hover { color: var(--texte); }
-.onglet[aria-selected="true"], .bascule button[aria-pressed="true"] { background: var(--accent); color: #fff; font-weight: 600; }
+.onglet[aria-selected="true"], .bascule button[aria-pressed="true"] { background: var(--accent); color: var(--sur-accent); font-weight: 600; }
 .onglet:focus-visible, .bascule button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Choix ponctuelle / charge fixe */
@@ -93,7 +148,7 @@ button.kpi:hover { border-color: var(--accent); }
 .col-zone { height: 160px; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: .25rem; }
 .col-valeur { font-size: .72rem; color: var(--discret); white-space: nowrap; }
 .col-barre {
-  width: 100%; max-width: 38px; min-height: 4px; border-radius: 6px 6px 3px 3px; background: #4c3a7a;
+  width: 100%; max-width: 38px; min-height: 4px; border-radius: 6px 6px 3px 3px; background: var(--barre);
   height: calc((100% - 1.3rem) * var(--r));
 }
 .col-barre.courant { background: var(--accent); }
@@ -133,7 +188,7 @@ button.kpi:hover { border-color: var(--accent); }
   position: sticky; top: 0; z-index: 1; padding: .35rem .65rem; background: var(--panneau);
   color: var(--discret); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
 }
-.service:hover { background: rgba(255, 255, 255, .04); }
+.service:hover { background: var(--survol); }
 .service:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .service.actif { background: var(--accent-doux); }
 .service-infos { flex: 1; min-width: 0; display: grid; line-height: 1.25; }
@@ -147,11 +202,10 @@ input, select {
   border: 1px solid var(--bord); border-radius: 10px; padding: .55rem .7rem;
 }
 input:focus, select:focus { outline: 2px solid var(--accent-doux); border-color: var(--accent); }
-input[type=date] { color-scheme: dark; }
 .deux { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
 .actions-form { display: flex; gap: .5rem; margin-top: .3rem; }
 .btn { font: inherit; padding: .6rem 1rem; border-radius: 10px; border: 1px solid var(--bord); background: var(--carte); color: var(--texte); cursor: pointer; }
-.btn.principal { flex: 1; background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn.principal { flex: 1; background: var(--accent); border-color: var(--accent); color: var(--sur-accent); font-weight: 600; }
 .btn:hover { filter: brightness(1.1); }
 .btn.principal.danger { background: var(--danger); border-color: var(--danger); }
 
@@ -160,7 +214,7 @@ dialog {
   width: min(380px, calc(100vw - 2rem)); padding: 1.2rem 1.3rem; color: var(--texte);
   background: var(--panneau); border: 1px solid var(--bord); border-radius: var(--rayon);
 }
-dialog::backdrop { background: rgba(0, 0, 0, .6); }
+dialog::backdrop { background: var(--voile); }
 dialog h3 { margin: 0 0 .4rem; font-size: 1.05rem; }
 dialog p { margin: 0 0 1rem; }
 dialog p:empty { display: none; }
@@ -171,7 +225,7 @@ dialog .actions-form { flex-direction: row-reverse; }
 .toast {
   padding: .65rem 1rem; border-radius: 10px; font-size: .9rem; max-width: 340px;
   background: var(--carte); border: 1px solid var(--bord); border-left: 3px solid var(--accent);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .4); animation: apparition .2s ease-out;
+  box-shadow: 0 8px 24px var(--ombre); animation: apparition .2s ease-out;
 }
 .toast.erreur { border-left-color: var(--danger); }
 @keyframes apparition { from { opacity: 0; transform: translateY(8px); } }
@@ -194,7 +248,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .pill-freq { background: var(--carte); color: var(--discret); }
 /* Argent reçu : aides et remboursements */
 .recu { color: var(--recu); }
-.pill-recu { background: rgba(62, 207, 142, .14); color: var(--recu); }
+.pill-recu { background: var(--recu-doux); color: var(--recu); }
 label.case { display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: var(--texte); cursor: pointer; }
 label.case input { width: auto; margin: 0; accent-color: var(--recu); }
 .ligne-prix { display: grid; text-align: right; }
