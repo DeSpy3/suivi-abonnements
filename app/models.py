@@ -1,8 +1,13 @@
+# Mon budget — Copyright (c) 2026 Maël Sohier. Tous droits réservés. Voir LICENSE.
 from datetime import date
 from decimal import Decimal
 from enum import Enum
 
 from pydantic import BaseModel, Field
+
+# Garde-fous contre les saisies aberrantes
+MONTANT_MAX = Decimal("1000000")
+TEXTE_MAX = 100
 
 
 class Frequence(str, Enum):
@@ -20,11 +25,11 @@ class TypeRecurrent(str, Enum):
 class Abonnement(BaseModel):
     """Dépense récurrente : abonnement ou charge fixe."""
 
-    nom: str = Field(min_length=1)
-    prix: Decimal = Field(gt=0)
+    nom: str = Field(min_length=1, max_length=TEXTE_MAX)
+    prix: Decimal = Field(gt=0, le=MONTANT_MAX)
     frequence: Frequence
-    categorie: str | None = None
-    icone: str | None = None
+    categorie: str | None = Field(default=None, max_length=TEXTE_MAX)
+    icone: str | None = Field(default=None, max_length=TEXTE_MAX)
     date_prelevement: date | None = None  # un prélèvement connu (passé ou à venir)
     type: TypeRecurrent = TypeRecurrent.ABONNEMENT
 
@@ -40,9 +45,9 @@ class AbonnementOut(AbonnementDB):
 class Depense(BaseModel):
     """Dépense ponctuelle : essence, courses, restaurant…"""
 
-    libelle: str = Field(min_length=1)
-    montant: Decimal = Field(gt=0)
-    categorie: str | None = None
+    libelle: str = Field(min_length=1, max_length=TEXTE_MAX)
+    montant: Decimal = Field(gt=0, le=MONTANT_MAX)
+    categorie: str | None = Field(default=None, max_length=TEXTE_MAX)
     date: date
     remboursement: bool = False  # argent reçu : vient en déduction des dépenses
 
@@ -52,8 +57,8 @@ class DepenseDB(Depense):
 
 
 class BudgetIn(BaseModel):
-    montant: Decimal | None = Field(default=None, ge=0)
+    montant: Decimal | None = Field(default=None, ge=0, le=MONTANT_MAX)
 
 
 class BudgetCategorieIn(BudgetIn):
-    categorie: str = Field(min_length=1)
+    categorie: str = Field(min_length=1, max_length=TEXTE_MAX)

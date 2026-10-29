@@ -1,3 +1,4 @@
+# Mon budget — Copyright (c) 2026 Maël Sohier. Tous droits réservés. Voir LICENSE.
 import calendar
 from datetime import date
 from decimal import Decimal

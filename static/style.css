@@ -1,3 +1,4 @@
+/* Mon budget — Copyright (c) 2026 Maël Sohier. Tous droits réservés. Voir LICENSE. */
 /* ---------- Thèmes ----------
    Chaque thème redéfinit les mêmes variables. Le thème est choisi par l'attribut
    data-theme de <html> (posé par le script en tête de index.html).
@@ -68,6 +69,7 @@ body {
 .appli { max-width: 1320px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; display: grid; gap: 1rem; }
 .entete { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
 .entete h1 { margin: 0; font-size: 1.5rem; letter-spacing: -.01em; }
+.pied { text-align: center; font-size: .75rem; padding: 0 1rem 1.5rem; }
 .entete-droite { display: flex; align-items: center; gap: .9rem; flex-wrap: wrap; }
 #choix-theme { width: auto; padding: .3rem .6rem; font-size: .85rem; }
 #date-jour { color: var(--discret); font-size: .85rem; text-transform: capitalize; }

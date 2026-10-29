@@ -1,3 +1,5 @@
+# Mon budget — Copyright (c) 2026 Maël Sohier. Tous droits réservés. Voir LICENSE.
+import os
 import sqlite3
 from contextlib import contextmanager
 from datetime import date
@@ -20,7 +22,8 @@ DB_PATH = Path(user_data_dir("suivi-abonnements")) / "abonnements.db"
 
 @contextmanager
 def connexion():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    # Dossier lisible par l'utilisateur seulement (sans effet sous Windows, déjà privé par défaut)
+    DB_PATH.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     try:
@@ -32,6 +35,8 @@ def connexion():
 
 def init_db() -> None:
     with connexion() as conn:
+        if os.name == "posix":
+            DB_PATH.parent.chmod(0o700)  # aussi pour un dossier créé par une ancienne version
         conn.execute(
             """CREATE TABLE IF NOT EXISTS abonnements (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

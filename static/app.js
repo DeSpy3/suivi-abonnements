@@ -1,3 +1,4 @@
+// Mon budget — Copyright (c) 2026 Maël Sohier. Tous droits réservés. Voir LICENSE.
 const $ = (id) => document.getElementById(id);
 const euro = (v) => Number(v).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 const UNITE = { mensuel: "mois", trimestriel: "trimestre", annuel: "an" };
@@ -706,8 +707,12 @@ function changerMois(n) {
 $("mois-precedent").addEventListener("click", () => changerMois(-1));
 $("mois-suivant").addEventListener("click", () => changerMois(1));
 
+/* ---------- Présence ---------- */
+// Garde le serveur allumé tant que la page est ouverte (il s'arrête après 30 min sans signal)
+setInterval(() => fetch("/api/ping").catch(() => {}), 5 * 60 * 1000);
+
 /* ---------- Thème ---------- */
-// appliquerTheme() et themeChoisi sont définis dans index.html, avant le chargement de la page
+// appliquerTheme() et themeChoisi sont définis dans theme.js, chargé avant la page
 $("choix-theme").value = themeChoisi;
 $("choix-theme").addEventListener("change", () => {
   themeChoisi = $("choix-theme").value;

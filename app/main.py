@@ -1,12 +1,17 @@
+# Mon budget — Copyright (c) 2026 Maël Sohier. Tous droits réservés. Voir LICENSE.
+import time
 from contextlib import asynccontextmanager
 from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
+from urllib.parse import urlsplit
 
-from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi import FastAPI, HTTPException, Query, Request, Response
+from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from app import database
+from app import __version__, database
 from app.logic import (
     ajouter_mois,
     bornes_du_mois,
@@ -40,11 +45,49 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="Mon budget", lifespan=lifespan)
+# Pas de /docs ni /redoc : ces pages chargent des scripts depuis un CDN externe
+app = FastAPI(
+    title="Mon budget", version=__version__, lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None
+)
+app.state.derniere_activite = time.monotonic()  # lu par run.py pour s'arrêter quand l'appli n'est plus utilisée
+
+HOTES_AUTORISES = ["127.0.0.1", "localhost"]
+
+# Protège contre le « DNS rebinding » : un site web qui se ferait passer pour 127.0.0.1
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=HOTES_AUTORISES)
+
+# Politique de sécurité du contenu : la page ne charge que ses propres fichiers
+CSP = (
+    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
+    "connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+)
+
+
+@app.middleware("http")
+async def securite(request: Request, call_next):
+    app.state.derniere_activite = time.monotonic()
+    # Une modification ne peut venir que de l'appli elle-même, pas d'un autre site ouvert dans le navigateur
+    origine = request.headers.get("origin")
+    if request.method not in ("GET", "HEAD") and origine and urlsplit(origine).hostname not in HOTES_AUTORISES:
+        return PlainTextResponse("Origine refusée", status_code=403)
+    reponse = await call_next(request)
+    reponse.headers["Content-Security-Policy"] = CSP
+    reponse.headers["X-Content-Type-Options"] = "nosniff"
+    reponse.headers["X-Frame-Options"] = "DENY"
+    reponse.headers["Referrer-Policy"] = "no-referrer"
+    if request.url.path.startswith("/api/"):
+        reponse.headers["Cache-Control"] = "no-store"
+    return reponse
 
 
 def vers_sortie(abo: AbonnementDB) -> AbonnementOut:
     return AbonnementOut(**abo.model_dump(), cout_mensuel=round(cout_mensuel(abo), 2))
+
+
+@app.get("/api/ping", status_code=204)
+def ping() -> Response:
+    """Signal de présence de la page : l'appli reste allumée tant qu'un onglet est ouvert."""
+    return Response(status_code=204)
 
 
 @app.get("/api/abonnements")

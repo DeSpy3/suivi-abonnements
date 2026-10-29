@@ -1,5 +1,9 @@
+# Mon budget — Copyright (c) 2026 Maël Sohier. Tous droits réservés. Voir LICENSE.
 from datetime import date
 from decimal import Decimal
+
+import pytest
+from pydantic import ValidationError
 
 from app.logic import (
     ajouter_mois,
@@ -81,3 +85,14 @@ def test_remboursement_deduit_des_depenses():
     assert total_depenses(depenses) == Decimal("9")
     assert depenses_par_categorie(depenses) == {"Santé": Decimal("9")}
     assert total_aides([], depenses) == Decimal("21")
+
+
+@pytest.mark.parametrize("prix", ["0", "-5", "NaN", "Infinity", "1e400"])
+def test_montant_aberrant_refuse(prix):
+    with pytest.raises(ValidationError):
+        Abonnement(nom="Test", prix=prix, frequence=Frequence.MENSUEL)
+
+
+def test_texte_trop_long_refuse():
+    with pytest.raises(ValidationError):
+        Depense(libelle="x" * 101, montant=Decimal("1"), date=date(2026, 10, 1))

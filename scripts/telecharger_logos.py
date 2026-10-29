@@ -1,3 +1,4 @@
+# Mon budget — Copyright (c) 2026 Maël Sohier. Tous droits réservés. Voir LICENSE.
 import json
 import urllib.request
 from pathlib import Path
