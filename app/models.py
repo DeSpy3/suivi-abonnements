@@ -14,6 +14,7 @@ class Frequence(str, Enum):
 class TypeRecurrent(str, Enum):
     ABONNEMENT = "abonnement"  # Netflix, Spotify…
     CHARGE = "charge"  # charge fixe : loyer, assurance…
+    AIDE = "aide"  # argent reçu régulièrement : APL, CAF… (vient en déduction)
 
 
 class Abonnement(BaseModel):
@@ -43,6 +44,7 @@ class Depense(BaseModel):
     montant: Decimal = Field(gt=0)
     categorie: str | None = None
     date: date
+    remboursement: bool = False  # argent reçu : vient en déduction des dépenses
 
 
 class DepenseDB(Depense):

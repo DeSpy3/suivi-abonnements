@@ -2,7 +2,7 @@
   color-scheme: dark;
   --fond: #121016; --panneau: #1a1820; --carte: #24212b; --bord: #322e3a;
   --texte: #f1eef6; --discret: #9a94a6;
-  --accent: #8b5cf6; --accent-doux: rgba(139, 92, 246, .16); --danger: #f0524b;
+  --accent: #8b5cf6; --accent-doux: rgba(139, 92, 246, .16); --danger: #f0524b; --recu: #3ecf8e;
   --rayon: 14px;
 }
 * { box-sizing: border-box; }
@@ -192,6 +192,11 @@ ul { list-style: none; margin: 0; padding: 0; }
 .meta { display: flex; gap: .35rem; flex-wrap: wrap; }
 .pill { font-size: .72rem; padding: .08rem .55rem; border-radius: 999px; background: var(--accent-doux); color: var(--accent); }
 .pill-freq { background: var(--carte); color: var(--discret); }
+/* Argent reçu : aides et remboursements */
+.recu { color: var(--recu); }
+.pill-recu { background: rgba(62, 207, 142, .14); color: var(--recu); }
+label.case { display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: var(--texte); cursor: pointer; }
+label.case input { width: auto; margin: 0; accent-color: var(--recu); }
 .ligne-prix { display: grid; text-align: right; }
 .ligne-actions { display: flex; gap: .2rem; }
 .icone-btn { width: 34px; height: 34px; border-radius: 10px; border: 0; background: transparent; color: var(--discret); font-size: 1rem; cursor: pointer; }

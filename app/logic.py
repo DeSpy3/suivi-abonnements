@@ -2,7 +2,7 @@ import calendar
 from datetime import date
 from decimal import Decimal
 
-from app.models import Abonnement, Depense, Frequence
+from app.models import Abonnement, Depense, Frequence, TypeRecurrent
 
 SANS_CATEGORIE = "Sans catégorie"
 
@@ -13,21 +13,36 @@ MOIS_PAR_PERIODE = {
 }
 
 
+# Les aides et les remboursements sont de l'argent reçu : ils comptent en négatif
+def signe(element: Abonnement | Depense) -> int:
+    if isinstance(element, Depense):
+        return -1 if element.remboursement else 1
+    return -1 if element.type == TypeRecurrent.AIDE else 1
+
+
 def cout_mensuel(abonnement: Abonnement) -> Decimal:
+    """Montant lissé au mois, toujours positif (même pour une aide)."""
     return abonnement.prix / MOIS_PAR_PERIODE[abonnement.frequence]
 
 
 def total_mensuel(abonnements: list[Abonnement]) -> Decimal:
-    return sum((cout_mensuel(a) for a in abonnements), Decimal("0"))
+    """Coût mensuel net : les aides viennent en déduction."""
+    return sum((signe(a) * cout_mensuel(a) for a in abonnements), Decimal("0"))
 
 
 def cout_par_categorie(abonnements: list[Abonnement]) -> dict[str, Decimal]:
-    """Coût mensuel lissé des dépenses récurrentes, par catégorie."""
+    """Coût mensuel net des dépenses récurrentes, par catégorie."""
     totaux: dict[str, Decimal] = {}
     for a in abonnements:
         cle = a.categorie or SANS_CATEGORIE
-        totaux[cle] = totaux.get(cle, Decimal("0")) + cout_mensuel(a)
+        totaux[cle] = totaux.get(cle, Decimal("0")) + signe(a) * cout_mensuel(a)
     return totaux
+
+
+def total_aides(abonnements: list[Abonnement], depenses: list[Depense]) -> Decimal:
+    """Argent reçu sur le mois : aides lissées au mois + remboursements, en positif."""
+    aides = sum((cout_mensuel(a) for a in abonnements if signe(a) < 0), Decimal("0"))
+    return aides + sum((d.montant for d in depenses if signe(d) < 0), Decimal("0"))
 
 
 def ajouter_mois(d: date, n: int) -> date:
@@ -58,10 +73,10 @@ def echeances(abo: Abonnement, debut: date, fin: date) -> list[date]:
 
 
 def prelevements_du_mois(abo: Abonnement, debut: date, fin: date) -> Decimal:
-    """Argent réellement prélevé sur la période. Sans date connue : coût mensuel lissé."""
+    """Argent réellement prélevé sur la période (négatif pour une aide). Sans date connue : coût mensuel lissé."""
     if abo.date_prelevement is None:
-        return cout_mensuel(abo)
-    return abo.prix * len(echeances(abo, debut, fin))
+        return signe(abo) * cout_mensuel(abo)
+    return signe(abo) * abo.prix * len(echeances(abo, debut, fin))
 
 
 def bornes_du_mois(d: date) -> tuple[date, date]:
@@ -70,13 +85,14 @@ def bornes_du_mois(d: date) -> tuple[date, date]:
 
 
 def total_depenses(depenses: list[Depense]) -> Decimal:
-    return sum((d.montant for d in depenses), Decimal("0"))
+    """Total net : les remboursements viennent en déduction."""
+    return sum((signe(d) * d.montant for d in depenses), Decimal("0"))
 
 
 def depenses_par_categorie(depenses: list[Depense]) -> dict[str, Decimal]:
-    """Total des dépenses ponctuelles par catégorie."""
+    """Total net des dépenses ponctuelles par catégorie."""
     totaux: dict[str, Decimal] = {}
     for d in depenses:
         cle = d.categorie or SANS_CATEGORIE
-        totaux[cle] = totaux.get(cle, Decimal("0")) + d.montant
+        totaux[cle] = totaux.get(cle, Decimal("0")) + signe(d) * d.montant
     return totaux

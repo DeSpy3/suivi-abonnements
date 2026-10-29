@@ -15,6 +15,8 @@ from app.logic import (
     depenses_par_categorie,
     echeances,
     prelevements_du_mois,
+    signe,
+    total_aides,
     total_depenses,
     total_mensuel,
 )
@@ -128,23 +130,26 @@ def synthese() -> dict:
     abos = database.lister()
     aujourdhui = date.today()
     ponctuelles = database.lister_depenses(*bornes_du_mois(aujourdhui))
-    recurrent = total_mensuel(abos)
-    ponctuel = total_depenses(ponctuelles)
-    mensuel = recurrent + ponctuel
+    # Brut = dépenses seules ; les aides et remboursements viennent ensuite en déduction
+    recurrent = total_mensuel([a for a in abos if signe(a) > 0])
+    ponctuel = total_depenses([d for d in ponctuelles if signe(d) > 0])
+    aides = total_aides(abos, ponctuelles)
+    brut = recurrent + ponctuel
+    mensuel = brut - aides
     budget = database.lire_budget()
     budgets = database.lire_budgets_categories()
 
-    # Par catégorie : coût mensuel lissé des récurrentes + dépenses ponctuelles du mois
+    # Par catégorie, en net : coût mensuel lissé des récurrentes + dépenses ponctuelles du mois
     depenses = depenses_par_categorie(ponctuelles)
     for nom, montant in cout_par_categorie(abos).items():
         depenses[nom] = depenses.get(nom, Decimal("0")) + montant
 
-    # Grandes zones pour le donut de la vue d'ensemble
+    # Grandes zones pour le donut de la vue d'ensemble (dépenses brutes : un donut n'a pas de part négative)
     seuls_abos = [a for a in abos if a.type == TypeRecurrent.ABONNEMENT]
     total_abos = total_mensuel(seuls_abos)
     zones = [
         {"nom": nom, "montant": str(round(montant, 2)),
-         "pourcentage": float(montant / mensuel * 100) if mensuel else 0}
+         "pourcentage": float(montant / brut * 100) if brut else 0}
         for nom, montant in [
             ("Abonnements", total_abos),
             ("Charges fixes", recurrent - total_abos),
@@ -165,11 +170,11 @@ def synthese() -> dict:
         categories.append({
             "nom": nom,
             "montant": str(round(montant, 2)),
-            "pourcentage": float(montant / mensuel * 100) if mensuel else 0,
+            "pourcentage": max(float(montant / brut * 100), 0) if brut else 0,
             "budget": str(budgets[nom]) if nom in budgets else None,
         })
 
-    # Argent réellement prélevé, mois par mois (mois courant + 5 suivants).
+    # Argent réellement prélevé, aides déduites, mois par mois (mois courant + 5 suivants).
     # Les dépenses ponctuelles ne sont connues que pour le mois courant.
     premier = aujourdhui.replace(day=1)
     projection = []
@@ -178,17 +183,17 @@ def synthese() -> dict:
         fin = ajouter_mois(premier, i + 1) - timedelta(days=1)
         total_mois = sum((prelevements_du_mois(a, debut, fin) for a in abos), Decimal("0"))
         if i == 0:
-            total_mois += ponctuel
+            total_mois += total_depenses(ponctuelles)
         projection.append({"mois": debut.isoformat()[:7], "total": str(round(total_mois, 2))})
 
-    # Prochains prélèvements dans les 60 jours
+    # Prochains prélèvements (et versements d'aides) dans les 60 jours
     prochains = []
     for a in abos:
         dates = echeances(a, aujourdhui, aujourdhui + timedelta(days=60))
         if dates:
             prochains.append({
                 "id": a.id, "nom": a.nom, "icone": a.icone,
-                "date": dates[0].isoformat(), "montant": str(a.prix),
+                "date": dates[0].isoformat(), "montant": str(a.prix), "aide": signe(a) < 0,
             })
     prochains.sort(key=lambda p: p["date"])
 
@@ -197,6 +202,7 @@ def synthese() -> dict:
         "mensuel": str(round(mensuel, 2)),
         "recurrent": str(round(recurrent, 2)),
         "ponctuel": str(round(ponctuel, 2)),
+        "aides": str(round(aides, 2)),
         "reste": str(round(budget - mensuel, 2)) if budget is not None else None,
         "categories": categories,
         "zones": zones,

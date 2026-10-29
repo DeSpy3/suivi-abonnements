@@ -138,6 +138,7 @@
         </div>
         <label>Catégorie <input id="dep-categorie" list="liste-categories" placeholder="Optionnel" autocomplete="off"></label>
         <label class="seulement-charge">Date d'un prélèvement <input id="dep-prelevement" type="date"></label>
+        <label class="case"><input id="dep-recu" type="checkbox"> <span id="dep-recu-texte"></span></label>
         <div class="actions-form">
           <button id="dep-valider" class="btn principal" type="submit">Ajouter</button>
           <button id="dep-annuler" class="btn" type="button" hidden>Annuler</button>
@@ -162,7 +163,7 @@
 
       <section class="panneau">
         <div class="entete-liste">
-          <h2 class="titre-section">Charges fixes</h2>
+          <h2 class="titre-section">Charges fixes et aides</h2>
           <span class="discret" id="compteur-charges"></span>
         </div>
         <ul id="lignes-charges"></ul>

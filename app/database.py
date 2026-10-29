@@ -62,6 +62,10 @@ def init_db() -> None:
         if "type" not in colonnes:
             # Les lignes existantes deviennent des abonnements, comme avant
             conn.execute("ALTER TABLE abonnements ADD COLUMN type TEXT NOT NULL DEFAULT 'abonnement'")
+        colonnes = [c["name"] for c in conn.execute("PRAGMA table_info(depenses)")]
+        if "remboursement" not in colonnes:
+            # Les lignes existantes restent des dépenses
+            conn.execute("ALTER TABLE depenses ADD COLUMN remboursement INTEGER NOT NULL DEFAULT 0")
 
 
 def _iso(d: date | None) -> str | None:
@@ -126,6 +130,7 @@ def _vers_depense(ligne: sqlite3.Row) -> DepenseDB:
         montant=Decimal(ligne["montant"]),
         categorie=ligne["categorie"],
         date=ligne["date"],
+        remboursement=bool(ligne["remboursement"]),
     )
 
 
@@ -142,8 +147,8 @@ def lister_depenses(debut: date, fin: date) -> list[DepenseDB]:
 def ajouter_depense(dep: Depense) -> DepenseDB:
     with connexion() as conn:
         cur = conn.execute(
-            "INSERT INTO depenses (libelle, montant, categorie, date) VALUES (?, ?, ?, ?)",
-            (dep.libelle, str(dep.montant), dep.categorie, dep.date.isoformat()),
+            "INSERT INTO depenses (libelle, montant, categorie, date, remboursement) VALUES (?, ?, ?, ?, ?)",
+            (dep.libelle, str(dep.montant), dep.categorie, dep.date.isoformat(), int(dep.remboursement)),
         )
         id_ = cur.lastrowid
     return DepenseDB(id=id_, **dep.model_dump())
@@ -152,8 +157,8 @@ def ajouter_depense(dep: Depense) -> DepenseDB:
 def modifier_depense(id_: int, dep: Depense) -> DepenseDB | None:
     with connexion() as conn:
         cur = conn.execute(
-            "UPDATE depenses SET libelle = ?, montant = ?, categorie = ?, date = ? WHERE id = ?",
-            (dep.libelle, str(dep.montant), dep.categorie, dep.date.isoformat(), id_),
+            "UPDATE depenses SET libelle = ?, montant = ?, categorie = ?, date = ?, remboursement = ? WHERE id = ?",
+            (dep.libelle, str(dep.montant), dep.categorie, dep.date.isoformat(), int(dep.remboursement), id_),
         )
         if cur.rowcount == 0:
             return None

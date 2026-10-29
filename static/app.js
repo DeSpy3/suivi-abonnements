@@ -174,7 +174,7 @@ function rendrePresets() {
 /* ---------- Graphiques ---------- */
 // Dessine un donut dans le SVG idSvg, avec sa légende dans idLegende.
 // parts : [{ nom, montant, pourcentage }], couleurs : { nom: couleur }
-function rendreDonut(idSvg, idLegende, parts, total, couleurs) {
+function rendreDonut(idSvg, idLegende, parts, total, couleurs, libelleCentre = "par mois") {
   const svg = $(idSvg);
   const legende = $(idLegende);
   svg.replaceChildren();
@@ -212,7 +212,7 @@ function rendreDonut(idSvg, idLegende, parts, total, couleurs) {
   const valeur = el("text", { x: 21, y: 22, class: "centre-valeur" });
   valeur.textContent = euro(total);
   const label = el("text", { x: 21, y: 26.5, class: "centre-label" });
-  label.textContent = "par mois";
+  label.textContent = libelleCentre;
   svg.append(valeur, label);
 }
 
@@ -290,7 +290,8 @@ function rendreProchains(prochains) {
     const li = h("li", "proche");
     const infos = h("div", "proche-infos");
     infos.append(h("strong", "", p.nom), h("span", "discret", jourCourt(p.date) + " · " + dansCombienDeJours(p.date)));
-    li.append(creerLogo(p.nom, p.icone, 36), infos, h("strong", "montant", "−" + euro(p.montant)));
+    const montant = p.aide ? h("strong", "montant recu", "+" + euro(p.montant)) : h("strong", "montant", "−" + euro(p.montant));
+    li.append(creerLogo(p.nom, p.icone, 36), infos, montant);
     liste.append(li);
   }
 }
@@ -309,18 +310,22 @@ function creerLigne(a) {
   const infos = h("div", "ligne-infos");
   infos.append(h("strong", "", a.nom));
   const meta = h("div", "meta");
+  const aide = a.type === "aide";
+  if (aide) meta.append(h("span", "pill pill-recu", "aide"));
   if (a.categorie) meta.append(h("span", "pill", a.categorie));
   meta.append(h("span", "pill pill-freq", a.frequence));
-  if (a.date_prelevement) meta.append(h("span", "pill pill-freq", "prélèvement le " + jourCourt(a.date_prelevement)));
+  if (a.date_prelevement) {
+    meta.append(h("span", "pill pill-freq", (aide ? "versement le " : "prélèvement le ") + jourCourt(a.date_prelevement)));
+  }
   infos.append(meta);
 
   const prix = h("div", "ligne-prix");
   prix.append(
-    h("strong", "", euro(a.cout_mensuel) + " / mois"),
+    h("strong", aide ? "recu" : "", (aide ? "+" : "") + euro(a.cout_mensuel) + " / mois"),
     h("span", "discret", euro(a.prix) + " / " + UNITE[a.frequence])
   );
 
-  const estCharge = a.type === "charge";
+  const estCharge = a.type !== "abonnement"; // charges et aides se modifient dans l'onglet Dépenses
   const actions = h("div", "ligne-actions");
   actions.append(
     boutonIcone("✎", "Modifier", "", () => (estCharge ? editerDepense("charge", a) : editer(a))),
@@ -341,11 +346,14 @@ function rendreListe(abos) {
 }
 
 function rendreCharges(charges) {
-  $("compteur-charges").textContent = charges.length + (charges.length > 1 ? " charges" : " charge");
+  const nbAides = charges.filter((c) => c.type === "aide").length;
+  const nbCharges = charges.length - nbAides;
+  $("compteur-charges").textContent = nbCharges + (nbCharges > 1 ? " charges" : " charge")
+    + (nbAides ? " · " + nbAides + (nbAides > 1 ? " aides" : " aide") : "");
   const liste = $("lignes-charges");
   liste.replaceChildren();
   if (charges.length === 0) {
-    liste.append(h("li", "vide", "Aucune charge fixe. Choisis « Charge fixe » à gauche pour ajouter ton loyer, ton assurance…"));
+    liste.append(h("li", "vide", "Aucune charge fixe. Choisis « Charge fixe » à gauche pour ajouter ton loyer, ton assurance, ton APL…"));
   }
   for (const c of charges) liste.append(creerLigne(c));
 }
@@ -372,18 +380,28 @@ async function charger() {
 
   $("budget").textContent = s.budget === null ? "À définir" : euro(s.budget);
   $("mensuel").textContent = euro(s.mensuel);
-  $("detail-mensuel").textContent = euro(s.recurrent) + " récurrent · " + euro(s.ponctuel) + " ponctuel";
+  const aides = Number(s.aides);
+  $("detail-mensuel").textContent = euro(s.recurrent) + " récurrent · " + euro(s.ponctuel) + " ponctuel"
+    + (aides > 0 ? " · −" + euro(aides) + " d'aides" : "");
   $("reste").textContent = s.reste === null ? "—" : euro(s.reste);
   $("kpi-reste").classList.toggle("negatif", s.reste !== null && Number(s.reste) < 0);
 
-  rendreDonut("donut", "legende", s.zones, s.mensuel, COULEURS_ZONES);
+  rendreDonut("donut", "legende", s.zones, s.mensuel, COULEURS_ZONES, aides > 0 ? "net / mois" : "par mois");
+  if (aides > 0) {
+    // Les aides n'ont pas de part dans le donut : une ligne en plus dans la légende
+    const li = h("li");
+    const point = h("span", "point");
+    point.style.background = "var(--recu)";
+    li.append(point, h("span", "legende-nom", "Aides et remboursements"), h("span", "recu", "−" + euro(aides)));
+    $("legende").append(li);
+  }
   rendreDonut("donut-abos", "legende-abos", s.categories_abonnements, s.abonnements,
     couleursCategories(s.categories_abonnements));
   rendreProjection(s.projection);
   rendreBudgets(s.categories);
   rendreProchains(s.prochains);
-  rendreListe(recurrentes.filter((a) => a.type !== "charge"));
-  rendreCharges(recurrentes.filter((a) => a.type === "charge"));
+  rendreListe(recurrentes.filter((a) => a.type === "abonnement"));
+  rendreCharges(recurrentes.filter((a) => a.type !== "abonnement"));
   majCategories(recurrentes);
   marquerEdition();
 }
@@ -556,6 +574,7 @@ function creerLigneDepense(d) {
   const infos = h("div", "ligne-infos");
   infos.append(h("strong", "", d.libelle));
   const meta = h("div", "meta");
+  if (d.remboursement) meta.append(h("span", "pill pill-recu", "remboursement"));
   if (d.categorie) meta.append(h("span", "pill", d.categorie));
   meta.append(h("span", "pill pill-freq", jourCourt(d.date)));
   infos.append(meta);
@@ -565,7 +584,8 @@ function creerLigneDepense(d) {
     boutonIcone("✎", "Modifier", "", () => editerDepense("ponctuelle", d)),
     boutonIcone("✕", "Supprimer", "danger", () => supprimerDepense(d))
   );
-  li.append(creerLogo(d.libelle, null, 40), infos, h("strong", "montant", euro(d.montant)), actions);
+  const montant = d.remboursement ? h("strong", "montant recu", "+" + euro(d.montant)) : h("strong", "montant", euro(d.montant));
+  li.append(creerLogo(d.libelle, null, 40), infos, montant, actions);
   return li;
 }
 
@@ -580,6 +600,9 @@ function choisirTypeDepense(type) {
   $("aide-depense").textContent = charge
     ? "Saisie une seule fois, comptée automatiquement à chaque échéance."
     : "Une dépense à une date précise, comptée dans son mois.";
+  $("dep-recu-texte").textContent = charge
+    ? "Aide reçue (APL, CAF…) : déduite de tes dépenses"
+    : "Remboursement reçu : déduit de tes dépenses";
 }
 
 function editerDepense(type, d) {
@@ -592,13 +615,17 @@ function editerDepense(type, d) {
     $("dep-montant").value = d.prix;
     $("dep-frequence").value = d.frequence;
     $("dep-prelevement").value = d.date_prelevement ?? "";
+    $("dep-recu").checked = d.type === "aide";
   } else {
     $("dep-libelle").value = d.libelle;
     $("dep-montant").value = d.montant;
     $("dep-date").value = d.date;
+    $("dep-recu").checked = d.remboursement;
   }
   $("dep-categorie").value = d.categorie ?? "";
-  $("titre-depense").textContent = type === "charge" ? "Modifier la charge fixe" : "Modifier la dépense";
+  $("titre-depense").textContent = type === "charge"
+    ? (d.type === "aide" ? "Modifier l'aide" : "Modifier la charge fixe")
+    : (d.remboursement ? "Modifier le remboursement" : "Modifier la dépense");
   $("dep-valider").textContent = "Enregistrer";
   $("dep-annuler").hidden = false;
   marquerEdition();
@@ -637,12 +664,13 @@ $("form-depense").addEventListener("submit", async (e) => {
   const charge = typeDepense === "charge";
   const libelle = $("dep-libelle").value.trim();
   const categorie = $("dep-categorie").value.trim() || null;
+  const recu = $("dep-recu").checked;
   const corps = charge
     ? {
       nom: libelle, prix: $("dep-montant").value, frequence: $("dep-frequence").value,
-      categorie, icone: null, date_prelevement: $("dep-prelevement").value || null, type: "charge",
+      categorie, icone: null, date_prelevement: $("dep-prelevement").value || null, type: recu ? "aide" : "charge",
     }
-    : { libelle, montant: $("dep-montant").value, categorie, date: $("dep-date").value };
+    : { libelle, montant: $("dep-montant").value, categorie, date: $("dep-date").value, remboursement: recu };
   const base = charge ? "/api/abonnements" : "/api/depenses";
   const id = depEdition?.id;
   const message = id ? "Modifications enregistrées" : "« " + libelle + " » ajouté";

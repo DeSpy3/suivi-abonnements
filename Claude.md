@@ -2,6 +2,7 @@
 
 Appli **locale et personnelle** de gestion du budget : abonnements (Netflix, Spotify, etc.),
 charges fixes (loyer, assurance…) et dépenses ponctuelles (essence, courses…). Pas de suivi des revenus : on compare à un budget.
+Les aides (APL, CAF…) et remboursements sont de l'argent reçu qui vient **en déduction** des dépenses, pas un revenu.
 Propriétaire : Maël. Elle sert d'abord à son usage perso, d'abord sous Fedora 44 (GNOME), puis Windows.
 Maël code sous VS Code et veut progresser en programmation : explique brièvement ce que tu changes.
 
@@ -14,12 +15,12 @@ Maël code sous VS Code et veut progresser en programmation : explique brièveme
 Python, FastAPI, Pydantic, SQLite (module sqlite3), platformdirs. Front : HTML/CSS/JS vanilla, sans framework ni build.
 
 ## Structure
-- `app/models.py` : modèles Pydantic. `Abonnement` = dépense récurrente, avec `type` « abonnement » ou « charge » (charge fixe) ; `Depense` = dépense ponctuelle datée
+- `app/models.py` : modèles Pydantic. `Abonnement` = dépense récurrente, avec `type` « abonnement », « charge » (charge fixe) ou « aide » (argent reçu régulièrement) ; `Depense` = dépense ponctuelle datée, `remboursement=True` si c'est de l'argent reçu
 - `app/logic.py` : calculs purs (coût mensuel, échéances, totaux des dépenses). Pas d'accès base ni FastAPI ici, testable seul
 - `app/database.py` : accès SQLite et migrations
 - `app/main.py` : routes `/api/*` et service du dossier `static/` (monté en dernier)
 - `static/` : `index.html`, `style.css`, `app.js`, `presets.json` (services prédéfinis), `logos/` (ignoré par git)
-- `scripts/telecharger_logos.py` : télécharge les logos listés dans `presets.json`
+- `scripts/telecharger_logos.py` : télécharge les logos listés dans `presets.json` (Simple Icons, avec repli sur la version 9.21.0 pour les marques retirées ; `"logo": false` = pas de logo, pastille colorée)
 - `tests/` : tests pytest
 
 ## Règles de conception
@@ -37,7 +38,7 @@ Python, FastAPI, Pydantic, SQLite (module sqlite3), platformdirs. Front : HTML/C
 
 ## État actuel
 Fait : CRUD, SQLite, catalogue de services avec logos, date de prélèvement, budget global et par catégorie,
-projection sur 6 mois, prochains prélèvements, donut par grande zone (abonnements, charges fixes, ponctuel) dans la vue d'ensemble et donut des abonnements par catégorie dans leur onglet. Interface en 3 onglets : Vue d'ensemble, Abonnements,
+projection sur 6 mois, prochains prélèvements, donut par grande zone (abonnements, charges fixes, ponctuel) dans la vue d'ensemble et donut des abonnements par catégorie dans leur onglet. Aides régulières et remboursements déduits du total (net) et des catégories. Catalogue de services rangé par catégorie avec filtre. Interface en 3 onglets : Vue d'ensemble, Abonnements,
 Dépenses (ponctuelles par mois + charges fixes). Design sombre violet inspiré d'une app de finances perso (catégories IA en orange, Musique en rouge, Cloud en bleu).
 Une ancienne version bleue du style peut exister dans la branche `style-bleu`.
 ## Préférences d'interface
