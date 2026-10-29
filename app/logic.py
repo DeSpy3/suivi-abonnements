@@ -21,6 +21,15 @@ def total_mensuel(abonnements: list[Abonnement]) -> Decimal:
     return sum((cout_mensuel(a) for a in abonnements), Decimal("0"))
 
 
+def cout_par_categorie(abonnements: list[Abonnement]) -> dict[str, Decimal]:
+    """Coût mensuel lissé des dépenses récurrentes, par catégorie."""
+    totaux: dict[str, Decimal] = {}
+    for a in abonnements:
+        cle = a.categorie or SANS_CATEGORIE
+        totaux[cle] = totaux.get(cle, Decimal("0")) + cout_mensuel(a)
+    return totaux
+
+
 def ajouter_mois(d: date, n: int) -> date:
     """Ajoute n mois à une date, en ramenant le jour à la fin du mois si besoin."""
     annee, mois = divmod(d.year * 12 + (d.month - 1) + n, 12)

@@ -37,10 +37,10 @@
       </div>
 
       <div class="panneau">
-        <h2 class="titre-section">Dépenses par catégorie</h2>
+        <h2 class="titre-section">Répartition des dépenses</h2>
         <div class="donut-zone">
-          <svg id="donut" viewBox="0 0 42 42" role="img" aria-label="Répartition par catégorie"></svg>
-          <ul id="legende"></ul>
+          <svg class="donut" id="donut" viewBox="0 0 42 42" role="img" aria-label="Répartition par type de dépense"></svg>
+          <ul class="legende" id="legende"></ul>
         </div>
       </div>
 
@@ -90,13 +90,23 @@
       </form>
     </aside>
 
-    <section class="panneau">
-      <div class="entete-liste">
-        <h2 class="titre-section">Mes abonnements</h2>
-        <span class="discret" id="compteur"></span>
-      </div>
-      <ul id="lignes"></ul>
-    </section>
+    <div class="centre">
+      <section class="panneau">
+        <h2 class="titre-section">Abonnements par catégorie</h2>
+        <div class="donut-zone">
+          <svg class="donut" id="donut-abos" viewBox="0 0 42 42" role="img" aria-label="Abonnements par catégorie"></svg>
+          <ul class="legende" id="legende-abos"></ul>
+        </div>
+      </section>
+
+      <section class="panneau">
+        <div class="entete-liste">
+          <h2 class="titre-section">Mes abonnements</h2>
+          <span class="discret" id="compteur"></span>
+        </div>
+        <ul id="lignes"></ul>
+      </section>
+    </div>
   </div>
 
   <!-- ---------- Dépenses ---------- -->

@@ -73,17 +73,17 @@ button.kpi:hover { border-color: var(--accent); }
 
 /* Donut */
 .donut-zone { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-#donut { width: 180px; height: 180px; flex: none; }
+.donut { width: 180px; height: 180px; flex: none; }
 .anneau-fond { fill: none; stroke: var(--carte); stroke-width: 5.5; }
 .anneau-arc { fill: none; stroke-width: 5.5; transition: stroke-width .15s; }
 .anneau-arc:hover { stroke-width: 7; }
 .centre-valeur { font-size: 4.4px; font-weight: 700; fill: var(--texte); text-anchor: middle; }
 .centre-label { font-size: 2.4px; fill: var(--discret); text-anchor: middle; }
-#legende {
+.legende {
   list-style: none; margin: 0; padding: 0; flex: 1; min-width: 220px;
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem 1.5rem; font-size: .88rem;
 }
-#legende li { display: flex; align-items: center; gap: .5rem; min-width: 0; }
+.legende li { display: flex; align-items: center; gap: .5rem; min-width: 0; }
 .legende-nom { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .point { width: 9px; height: 9px; border-radius: 50%; flex: none; }
 

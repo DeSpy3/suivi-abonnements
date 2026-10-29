@@ -4,6 +4,7 @@ from decimal import Decimal
 from app.logic import (
     ajouter_mois,
     bornes_du_mois,
+    cout_par_categorie,
     depenses_par_categorie,
     echeances,
     total_depenses,
@@ -39,3 +40,12 @@ def test_depenses_par_categorie():
     ]
     assert total_depenses(depenses) == Decimal("75")
     assert depenses_par_categorie(depenses) == {"Transport": Decimal("70"), "Sans catégorie": Decimal("5")}
+
+
+def test_cout_par_categorie_lisse_au_mois():
+    abos = [
+        Abonnement(nom="Spotify", prix=Decimal("11.99"), frequence=Frequence.MENSUEL, categorie="Musique"),
+        Abonnement(nom="Deezer", prix=Decimal("120"), frequence=Frequence.ANNUEL, categorie="Musique"),
+        Abonnement(nom="Divers", prix=Decimal("3"), frequence=Frequence.TRIMESTRIEL),
+    ]
+    assert cout_par_categorie(abos) == {"Musique": Decimal("21.99"), "Sans catégorie": Decimal("1")}

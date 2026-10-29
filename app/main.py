@@ -8,10 +8,10 @@ from fastapi.staticfiles import StaticFiles
 
 from app import database
 from app.logic import (
-    SANS_CATEGORIE,
     ajouter_mois,
     bornes_du_mois,
     cout_mensuel,
+    cout_par_categorie,
     depenses_par_categorie,
     echeances,
     prelevements_du_mois,
@@ -26,6 +26,7 @@ from app.models import (
     BudgetIn,
     Depense,
     DepenseDB,
+    TypeRecurrent,
 )
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -135,9 +136,28 @@ def synthese() -> dict:
 
     # Par catégorie : coût mensuel lissé des récurrentes + dépenses ponctuelles du mois
     depenses = depenses_par_categorie(ponctuelles)
-    for a in abos:
-        cle = a.categorie or SANS_CATEGORIE
-        depenses[cle] = depenses.get(cle, Decimal("0")) + cout_mensuel(a)
+    for nom, montant in cout_par_categorie(abos).items():
+        depenses[nom] = depenses.get(nom, Decimal("0")) + montant
+
+    # Grandes zones pour le donut de la vue d'ensemble
+    seuls_abos = [a for a in abos if a.type == TypeRecurrent.ABONNEMENT]
+    total_abos = total_mensuel(seuls_abos)
+    zones = [
+        {"nom": nom, "montant": str(round(montant, 2)),
+         "pourcentage": float(montant / mensuel * 100) if mensuel else 0}
+        for nom, montant in [
+            ("Abonnements", total_abos),
+            ("Charges fixes", recurrent - total_abos),
+            ("Dépenses ponctuelles", ponctuel),
+        ]
+    ]
+
+    # Détail des abonnements seuls, pour le donut de l'onglet Abonnements
+    categories_abonnements = [
+        {"nom": nom, "montant": str(round(montant, 2)),
+         "pourcentage": float(montant / total_abos * 100) if total_abos else 0}
+        for nom, montant in sorted(cout_par_categorie(seuls_abos).items(), key=lambda x: x[1], reverse=True)
+    ]
 
     categories = []
     for nom in sorted(set(depenses) | set(budgets), key=lambda n: depenses.get(n, Decimal("0")), reverse=True):
@@ -179,6 +199,9 @@ def synthese() -> dict:
         "ponctuel": str(round(ponctuel, 2)),
         "reste": str(round(budget - mensuel, 2)) if budget is not None else None,
         "categories": categories,
+        "zones": zones,
+        "abonnements": str(round(total_abos, 2)),
+        "categories_abonnements": categories_abonnements,
         "projection": projection,
         "prochains": prochains[:10],
     }

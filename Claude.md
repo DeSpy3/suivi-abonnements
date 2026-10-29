@@ -37,7 +37,7 @@ Python, FastAPI, Pydantic, SQLite (module sqlite3), platformdirs. Front : HTML/C
 
 ## État actuel
 Fait : CRUD, SQLite, catalogue de services avec logos, date de prélèvement, budget global et par catégorie,
-projection sur 6 mois, prochains prélèvements, donut par catégorie. Interface en 3 onglets : Vue d'ensemble, Abonnements,
+projection sur 6 mois, prochains prélèvements, donut par grande zone (abonnements, charges fixes, ponctuel) dans la vue d'ensemble et donut des abonnements par catégorie dans leur onglet. Interface en 3 onglets : Vue d'ensemble, Abonnements,
 Dépenses (ponctuelles par mois + charges fixes). Design sombre violet inspiré d'une app de finances perso (catégories IA en orange, Musique en rouge, Cloud en bleu).
 Une ancienne version bleue du style peut exister dans la branche `style-bleu`.
 ## Préférences d'interface

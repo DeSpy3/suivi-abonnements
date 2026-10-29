@@ -3,6 +3,7 @@ const euro = (v) => Number(v).toLocaleString("fr-FR", { style: "currency", curre
 const UNITE = { mensuel: "mois", trimestriel: "trimestre", annuel: "an" };
 // Couleurs fixes pour certaines catégories, nuances de violet pour les autres
 const COULEURS_CATEGORIES = { IA: "#f08a4b", Musique: "#e5484d", Cloud: "#3b82f6" };
+const COULEURS_ZONES = { "Abonnements": "#8b5cf6", "Charges fixes": "#3b82f6", "Dépenses ponctuelles": "#f08a4b" };
 const PALETTE = ["#8b5cf6", "#c4b5fd", "#6d28d9", "#a78bfa", "#5b21b6", "#ddd6fe"];
 const NS = "http://www.w3.org/2000/svg";
 const RAYON = 15.9155; // circonférence = 100, donc les pourcentages se lisent directement
@@ -91,7 +92,7 @@ function dansCombienDeJours(iso) {
   return "dans " + n + " j";
 }
 
-// Associe une couleur à chaque catégorie, dans l'ordre de la liste (même ordre pour le donut et les budgets)
+// Associe une couleur à chaque catégorie, dans l'ordre de la liste
 function couleursCategories(categories) {
   const couleurs = {};
   let i = 0;
@@ -164,14 +165,15 @@ function rendrePresets() {
 }
 
 /* ---------- Graphiques ---------- */
-function rendreDonut(categories, mensuel) {
-  const svg = $("donut");
-  const legende = $("legende");
+// Dessine un donut dans le SVG idSvg, avec sa légende dans idLegende.
+// parts : [{ nom, montant, pourcentage }], couleurs : { nom: couleur }
+function rendreDonut(idSvg, idLegende, parts, total, couleurs) {
+  const svg = $(idSvg);
+  const legende = $(idLegende);
   svg.replaceChildren();
   legende.replaceChildren();
 
-  const entrees = categories.filter((c) => Number(c.montant) > 0);
-  const couleurs = couleursCategories(categories);
+  const entrees = parts.filter((c) => Number(c.montant) > 0);
   const groupe = el("g", { transform: "rotate(-90 21 21)" });
   groupe.append(el("circle", { cx: 21, cy: 21, r: RAYON, class: "anneau-fond" }));
 
@@ -201,7 +203,7 @@ function rendreDonut(categories, mensuel) {
 
   svg.append(groupe);
   const valeur = el("text", { x: 21, y: 22, class: "centre-valeur" });
-  valeur.textContent = euro(mensuel);
+  valeur.textContent = euro(total);
   const label = el("text", { x: 21, y: 26.5, class: "centre-label" });
   label.textContent = "par mois";
   svg.append(valeur, label);
@@ -367,7 +369,9 @@ async function charger() {
   $("reste").textContent = s.reste === null ? "—" : euro(s.reste);
   $("kpi-reste").classList.toggle("negatif", s.reste !== null && Number(s.reste) < 0);
 
-  rendreDonut(s.categories, s.mensuel);
+  rendreDonut("donut", "legende", s.zones, s.mensuel, COULEURS_ZONES);
+  rendreDonut("donut-abos", "legende-abos", s.categories_abonnements, s.abonnements,
+    couleursCategories(s.categories_abonnements));
   rendreProjection(s.projection);
   rendreBudgets(s.categories);
   rendreProchains(s.prochains);
